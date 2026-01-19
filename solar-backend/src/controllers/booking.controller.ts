@@ -97,7 +97,7 @@ export const addAdminNote = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const getBookingStats = async (req: Request, res: Response): Promise<void> => {
+export const getBookingStats = async (_req: Request, res: Response): Promise<void> => {
     try {
         const stats = await bookingService.getBookingStats();
 
