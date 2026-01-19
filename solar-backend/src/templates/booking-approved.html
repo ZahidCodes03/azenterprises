@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Approved</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .content {
+            padding: 40px 30px;
+            color: #333333;
+        }
+
+        .approval-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .approval-badge h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Great News!</h1>
+        </div>
+        <div class="content">
+            <p>Dear {{customerName}},</p>
+
+            <div class="approval-badge">
+                <h2>Your Booking Has Been Approved! 🎉</h2>
+            </div>
+
+            <p><strong>Booking ID:</strong> {{bookingId}}</p>
+
+            <p>We're pleased to inform you that your solar rooftop installation booking has been approved by our team.
+            </p>
+
+            <p><strong>Next Steps:</strong></p>
+            <ul style="line-height: 1.8;">
+                <li>Our team will contact you shortly to schedule the installation</li>
+                <li>You'll receive detailed quotation and payment information</li>
+                <li>Site survey will be conducted if required</li>
+            </ul>
+
+            <p>If you have any questions, feel free to reach out to us!</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>A Z Enterprises</strong></p>
+            <p>📧 azenterprises.solars@gmail.com | 📞 +917006031785</p>
+        </div>
+    </div>
+</body>
+
+</html>

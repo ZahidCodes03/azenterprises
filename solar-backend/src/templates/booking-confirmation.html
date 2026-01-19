@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Confirmation</title>
+  <style>
+    body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; }
+    .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 28px; }
+    .content { padding: 40px 30px; color: #333333; }
+    .booking-id { background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0; }
+    .booking-id strong { color: #059669; font-size: 18px; }
+    .details { margin: 30px 0; }
+    .detail-row { padding: 12px 0; border-bottom: 1px solid #e5e7eb; display: flex; }
+    .detail-label { font-weight: 600; color: #6b7280; width: 180px; }
+    .detail-value { color: #111827; flex: 1; }
+    .footer { background-color: #f9fafb; padding: 30px; text-align: center; color: #6b7280; font-size: 14px; }
+    .contact-info { margin-top: 20px; }
+    .contact-info p { margin: 5px 0; }
+    @media only screen and (max-width: 600px) {
+      .content { padding: 20px 15px; }
+      .detail-row { flex-direction: column; }
+      .detail-label { width: 100%; margin-bottom: 5px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🌞 Booking Confirmed!</h1>
+    </div>
+    <div class="content">
+      <p>Dear {{customerName}},</p>
+      <p>Thank you for choosing <strong>A Z Enterprises</strong> for your solar rooftop installation! We're excited to help you transition to clean, renewable energy.</p>
+      
+      <div class="booking-id">
+        <strong>Booking ID: {{bookingId}}</strong>
+      </div>
+
+      <h3 style="color: #059669; margin-top: 30px;">Booking Details</h3>
+      <div class="details">
+        <div class="detail-row">
+          <div class="detail-label">Customer Name:</div>
+          <div class="detail-value">{{customerName}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Email:</div>
+          <div class="detail-value">{{customerEmail}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Address:</div>
+          <div class="detail-value">{{address}}, {{city}}, {{state}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Monthly Bill:</div>
+          <div class="detail-value">₹{{electricityBill}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Roof Type:</div>
+          <div class="detail-value">{{roofType}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Preferred Date:</div>
+          <div class="detail-value">{{preferredDate}}</div>
+        </div>
+      </div>
+
+      <p style="margin-top: 30px;">Our team will review your booking and contact you within 24-48 hours to confirm your installation date and provide a detailed quotation.</p>
+      
+      <p><strong>What happens next?</strong></p>
+      <ul style="line-height: 1.8;">
+        <li>Our experts will review your requirements</li>
+        <li>You'll receive a detailed quotation</li>
+        <li>We'll schedule a site visit if needed</li>
+        <li>Installation will be scheduled at your convenience</li>
+      </ul>
+    </div>
+    
+    <div class="footer">
+      <div class="contact-info">
+        <p><strong>A Z Enterprises</strong></p>
+        <p>📧 azenterprises.solars@gmail.com</p>
+        <p>📞 +917006031785 | +916006780785</p>
+        <p>📍 Kupwara, Jammu & Kashmir-193222</p>
+      </div>
+      <p style="margin-top: 20px; color: #9ca3af; font-size: 12px;">
+        This is an automated email. Please do not reply directly to this message.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

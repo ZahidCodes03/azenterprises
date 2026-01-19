@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation Scheduled</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .content {
+            padding: 40px 30px;
+            color: #333333;
+        }
+
+        .schedule-box {
+            background-color: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Installation Scheduled</h1>
+        </div>
+        <div class="content">
+            <p>Dear {{customerName}},</p>
+
+            <p>Excellent news! Your solar rooftop installation has been scheduled.</p>
+
+            <div class="schedule-box">
+                <h3 style="margin-top: 0; color: #0284c7;">Installation Details</h3>
+                <p><strong>Booking ID:</strong> {{bookingId}}</p>
+                <p><strong>Scheduled Date:</strong> {{preferredDate}}</p>
+                <p><strong>Location:</strong> {{address}}, {{city}}</p>
+            </div>
+
+            <p><strong>Please ensure:</strong></p>
+            <ul style="line-height: 1.8;">
+                <li>Someone is available at the location</li>
+                <li>Roof access is clear and safe</li>
+                <li>Power supply can be temporarily disconnected if needed</li>
+            </ul>
+
+            <p>Our installation team will arrive on the scheduled date. The installation typically takes 1-2 days
+                depending on system size.</p>
+
+            <p>We'll call you a day before to confirm the timing.</p>
+        </div>
+
+        <div class="footer">
+            <p><strong>A Z Enterprises</strong></p>
+            <p>📧 azenterprises.solars@gmail.com | 📞 +917006031785</p>
+        </div>
+    </div>
+</body>
+
+</html>

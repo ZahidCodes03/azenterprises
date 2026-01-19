@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  INSTALLATION_SCHEDULED
+  INSTALLED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String?  // Only for admin users
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  bookings  Booking[]
+
+  @@map("users")
+}
+
+model Booking {
+  id              String        @id @default(uuid())
+  userId          String
+  address         String
+  city            String
+  state           String
+  electricityBill Float
+  roofType        String
+  roofSize        Float?
+  systemSize      Float?        // Desired system capacity in kW
+  bookingStatus   BookingStatus @default(PENDING)
+  preferredDate   DateTime
+  technician      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  user            User          @relation(fields: [userId], references: [id])
+  adminNotes      AdminNote[]
+
+  @@map("bookings")
+}
+
+model AdminNote {
+  id        String   @id @default(uuid())
+  bookingId String
+  note      String
+  createdAt DateTime @default(now())
+  
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@map("admin_notes")
+}
