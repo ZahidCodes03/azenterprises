@@ -35,7 +35,7 @@ app.use(cookieParser());
 app.use(apiLimiter);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.json({ status: 'OK', message: 'Server is running' });
 });
 
@@ -46,7 +46,7 @@ app.use('/api/calculator', calculatorRoutes);
 app.use('/api/users', userRoutes);
 
 // 404 handler
-app.use((req, res) => {
+app.use((_req, res) => {
     res.status(404).json({
         success: false,
         error: 'Route not found',
@@ -54,7 +54,7 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
     console.error('Error:', err);
     res.status(err.status || 500).json({
         success: false,
