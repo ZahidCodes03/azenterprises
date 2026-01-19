@@ -3,7 +3,8 @@ import path from 'path';
 import transporter from '../config/email';
 import { BookingEmailData } from '../types';
 
-const templatesDir = path.join(__dirname, '../templates');
+const templatesDir = path.join(__dirname, 'templates');
+
 
 // Load email templates
 const loadTemplate = (templateName: string): string => {
