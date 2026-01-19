@@ -7,12 +7,13 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         const result = await authService.loginAdmin(email, password);
 
         // Set HTTP-only cookie
-        res.cookie('token', result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        });
+       res.cookie('token', result.token, {
+  httpOnly: true,
+  secure: true,      // REQUIRED for HTTPS (Vercel + Render)
+  sameSite: 'none',  // REQUIRED for cross-site cookies
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+});
+
 
         res.json({
             success: true,
@@ -27,7 +28,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const logout = async (_req: Request, res: Response): Promise<void> => {
-    res.clearCookie('token');
+    res.clearCookie('token', {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+});
     res.json({
         success: true,
         message: 'Logged out successfully',
