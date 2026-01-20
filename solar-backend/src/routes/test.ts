@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.get('/db-test', async (req, res) => {
+router.get('/db-test', async (_req, res) => {
   try {
     const totalBookings = await prisma.booking.count();
     console.log('Total bookings:', totalBookings);
