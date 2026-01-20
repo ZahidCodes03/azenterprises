@@ -74,13 +74,7 @@ export default function AdminLoginPage() {
                         </Button>
                     </form>
 
-                    <div className="mt-6 bg-blue-50 p-4 rounded-lg">
-                        <p className="text-sm text-gray-700">
-                            <strong>Default Credentials:</strong><br />
-                            Email: admin@azenterprises.com<br />
-                            Password: Admin@123
-                        </p>
-                    </div>
+                   
                 </Card>
 
                 <p className="text-center text-sm text-gray-600 mt-6">

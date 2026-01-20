@@ -21,12 +21,17 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 
 // 🔥 CORS (CRITICAL)
+// 🔥 CORS (CRITICAL)
 app.use(cors({
-  origin: ["https://azenterprises.vercel.app"],
+  origin: [
+    "http://localhost:3000",          // ✅ local frontend
+    "https://azenterprises.vercel.app" // ✅ production frontend
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 
 // Handle preflight
 app.options("*", cors());

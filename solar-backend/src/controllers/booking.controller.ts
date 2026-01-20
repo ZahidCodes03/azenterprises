@@ -112,3 +112,5 @@ export const getBookingStats = async (_req: Request, res: Response): Promise<voi
         });
     }
 };
+const totalBookings = await prisma.booking.count();
+
