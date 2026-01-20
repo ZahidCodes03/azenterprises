@@ -16,16 +16,28 @@ app.set("trust proxy", 1);
 
 const PORT = process.env.PORT || 5000;
 
+// ✅ FIXED helmet
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false
+  })
+);
 
-app.use(helmet());
-
+// ✅ FIXED cors
 app.use(cors({
   origin: [
     "http://localhost:3000",
-    "https://azenterprises.vercel.app",
+    "http://localhost:5173",
+    "https://azenterprises.vercel.app"
   ],
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  exposedHeaders: ["set-cookie"]
 }));
+
+// ✅ REQUIRED for preflight
+app.options("*", cors());
 
 app.use(express.json());
 app.use(cookieParser());
