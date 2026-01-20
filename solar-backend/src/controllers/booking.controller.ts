@@ -1,116 +1,78 @@
-import { Request, Response } from 'express';
-import * as bookingService from '../services/booking.service';
-import { BookingStatus } from '@prisma/client';
+import { PrismaClient, BookingStatus } from "@prisma/client";
 
-export const createBooking = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const booking = await bookingService.createBooking(req.body);
+const prisma = new PrismaClient();
 
-        res.status(201).json({
-            success: true,
-            message: 'Booking created successfully',
-            booking,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to create booking',
-        });
-    }
+// CREATE
+export const createBooking = async (data: any) => {
+  return prisma.booking.create({
+    data,
+  });
 };
 
-export const getAllBookings = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { status, search } = req.query;
-
-        const bookings = await bookingService.getAllBookings({
-            status: status as BookingStatus | undefined,
-            search: search as string | undefined,
-        });
-
-        res.json({
-            success: true,
-            bookings,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to fetch bookings',
-        });
-    }
+// GET ALL (with filters)
+export const getAllBookings = async ({
+  status,
+  search,
+}: {
+  status?: BookingStatus;
+  search?: string;
+}) => {
+  return prisma.booking.findMany({
+    where: {
+      ...(status && { status }),
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: "insensitive" } },
+          { phone: { contains: search } },
+        ],
+      }),
+    },
+    orderBy: { createdAt: "desc" },
+  });
 };
 
-export const getBookingById = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const booking = await bookingService.getBookingById(id);
-
-        res.json({
-            success: true,
-            booking,
-        });
-    } catch (error: any) {
-        res.status(404).json({
-            success: false,
-            error: error.message || 'Booking not found',
-        });
-    }
+// GET BY ID
+export const getBookingById = async (id: string) => {
+  const booking = await prisma.booking.findUnique({ where: { id } });
+  if (!booking) throw new Error("Booking not found");
+  return booking;
 };
 
-export const updateBookingStatus = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const { bookingStatus, technician } = req.body;
-
-        const booking = await bookingService.updateBookingStatus(id, bookingStatus, technician);
-
-        res.json({
-            success: true,
-            message: 'Booking status updated successfully',
-            booking,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to update booking',
-        });
-    }
+// UPDATE STATUS
+export const updateBookingStatus = async (
+  id: string,
+  bookingStatus: BookingStatus,
+  technician?: string
+) => {
+  return prisma.booking.update({
+    where: { id },
+    data: {
+      status: bookingStatus,
+      technician,
+    },
+  });
 };
 
-export const addAdminNote = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const { id } = req.params;
-        const { note } = req.body;
-
-        const adminNote = await bookingService.addAdminNote(id, note);
-
-        res.json({
-            success: true,
-            message: 'Admin note added successfully',
-            adminNote,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to add note',
-        });
-    }
+// ADD ADMIN NOTE
+export const addAdminNote = async (id: string, note: string) => {
+  return prisma.booking.update({
+    where: { id },
+    data: {
+      adminNote: note,
+    },
+  });
 };
 
-export const getBookingStats = async (_req: Request, res: Response): Promise<void> => {
-    try {
-        const stats = await bookingService.getBookingStats();
+// STATS
+export const getBookingStats = async () => {
+  
+  const pending = await prisma.booking.count({ where: { status: "PENDING" } });
+  const completed = await prisma.booking.count({ where: { status: "COMPLETED" } });
 
-        res.json({
-            success: true,
-            stats,
-        });
-    } catch (error: any) {
-        res.status(500).json({
-            success: false,
-            error: error.message || 'Failed to fetch stats',
-        });
-    }
+  return {
+    totalBookings,
+    pending,
+    completed,
+  };
 };
-const totalBookings = await prisma.booking.count();
-
