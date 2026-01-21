@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Calendar, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar, Users, LogOut, FileText } from 'lucide-react';
 import { authAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,7 @@ export default function AdminSidebar({ onClose }: AdminSidebarProps) {
     const menuItems = [
         { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
         { icon: Calendar, label: 'Bookings', href: '/admin/bookings' },
+        { icon: FileText, label: 'Invoices', href: '/admin/bills' },
         { icon: Users, label: 'Users', href: '/admin/users' },
     ];
 

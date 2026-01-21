@@ -26,11 +26,7 @@ export default function HomePage() {
                                 <ArrowRight className="w-5 h-5 ml-2" />
                             </Button>
                         </Link>
-                        <Link href="/calculator">
-                            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                                Calculate Your Savings
-                            </Button>
-                        </Link>
+                       
                     </div>
                 </div>
             </section>

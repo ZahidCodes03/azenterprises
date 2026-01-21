@@ -54,11 +54,7 @@ export default function Hero() {
                                     <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Button>
                             </Link>
-                            <Link href="/calculator">
-                                <Button variant="outline" size="lg">
-                                    Calculate Savings
-                                </Button>
-                            </Link>
+                           
                         </div>
                     </div>
 

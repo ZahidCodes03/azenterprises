@@ -6,8 +6,9 @@ import helmet from "helmet";
 
 import authRoutes from "./routes/auth.routes";
 import bookingRoutes from "./routes/booking.routes";
-import calculatorRoutes from "./routes/calculator.routes";
+
 import userRoutes from "./routes/user.routes";
+import billRoutes from "./routes/bill.routes";
 
 dotenv.config();
 
@@ -50,8 +51,9 @@ app.get("/", (_req, res) => {
 // API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
-app.use("/api/calculator", calculatorRoutes);
+
 app.use("/api/users", userRoutes);
+app.use("/api/bills", billRoutes);
 
 // API health
 app.get("/api/health", (_req, res) => {

@@ -30,11 +30,6 @@ export const bookingAPI = {
     getStats: () => api.get('/bookings/stats'),
 };
 
-// Calculator API
-export const calculatorAPI = {
-    estimate: (data: { monthlyBill: number; state: string; roofSize: number }) =>
-        api.post('/calculator/estimate', data),
-};
 
 // User API
 export const userAPI = {

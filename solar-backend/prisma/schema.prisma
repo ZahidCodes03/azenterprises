@@ -60,6 +60,7 @@ model Booking {
   @@map("bookings")
 }
 
+
 model AdminNote {
   id        String   @id @default(uuid())
   bookingId String
@@ -70,3 +71,37 @@ model AdminNote {
 
   @@map("admin_notes")
 }
+
+model Bill {
+  id              String   @id @default(uuid())
+  invoiceNo       String   @unique
+  date            DateTime
+  customerName    String
+  customerAddress String
+  customerPhone   String
+  customerEmail   String
+  subTotal        Float
+  discount        Float    @default(0)
+  taxAmount       Float
+  grandTotal      Float
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  items           BillItem[]
+
+  @@map("bills")
+}
+
+model BillItem {
+  id          String @id @default(uuid())
+  billId      String
+  description String
+  quantity    Int
+  rate        Float
+  amount      Float
+  
+  bill        Bill   @relation(fields: [billId], references: [id], onDelete: Cascade)
+
+  @@map("bill_items")
+}
+

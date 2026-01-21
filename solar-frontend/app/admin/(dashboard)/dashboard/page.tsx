@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
                                     className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     <div className="flex-1">
-                                        <h3 className="font-semibold text-gray-900">{booking.user.name}</h3>
+                                        <h3 className="font-semibold text-gray-900">{booking.user?.name || 'Unknown User'}</h3>
                                         <p className="text-sm text-gray-600">{booking.city}, {booking.state}</p>
                                         <p className="text-xs text-gray-500 mt-1">{formatDateTime(booking.createdAt)}</p>
                                     </div>
