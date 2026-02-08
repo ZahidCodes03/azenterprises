@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Build Output
+dist/
+build/
+coverage/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Backend
+backend/uploads/
+backend/logs/
+
+# Optional: Ignore package-lock if you don't want to sync it (usually good to sync though)
+# package-lock.json 

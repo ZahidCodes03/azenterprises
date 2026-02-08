@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans antialiased text-gray-800 bg-white;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white transition-all duration-300 bg-primary-600 rounded-lg hover:bg-primary-700 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-primary-700 transition-all duration-300 bg-white border-2 border-primary-600 rounded-lg hover:bg-primary-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  
+  .btn-outline {
+    @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white transition-all duration-300 bg-transparent border-2 border-white rounded-lg hover:bg-white hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 text-gray-800 transition-all duration-200 bg-white border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:ring-2 focus:ring-primary-200 focus:outline-none;
+  }
+  
+  .input-label {
+    @apply block mb-2 text-sm font-medium text-gray-700;
+  }
+  
+  .card {
+    @apply p-6 transition-all duration-300 bg-white border border-gray-100 shadow-md rounded-2xl hover:shadow-xl;
+  }
+  
+  .section-title {
+    @apply text-3xl font-bold text-gray-900 md:text-4xl;
+  }
+  
+  .section-subtitle {
+    @apply mt-4 text-lg text-gray-600;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #16a34a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #15803d;
+}
+
+/* Print styles for invoice */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
