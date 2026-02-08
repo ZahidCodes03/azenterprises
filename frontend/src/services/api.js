@@ -9,12 +9,17 @@ import axios from "axios";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+console.log("Backend URL:", BACKEND_URL);
+
+
 if (!BACKEND_URL) {
   console.error("❌ VITE_BACKEND_URL is missing in Netlify Environment Variables");
 }
 
 // Always attach /api because backend routes start with /api
 const API_BASE_URL = `${BACKEND_URL}/api`;
+
+console.log("API Base URL:", API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
