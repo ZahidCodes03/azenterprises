@@ -17,6 +17,8 @@ import Bookings from './pages/Bookings';
 import Customers from './pages/Customers';
 import Invoices from './pages/Invoices';
 
+
+
 // Public Layout Wrapper
 const PublicLayout = ({ children }) => (
     <>
@@ -27,6 +29,9 @@ const PublicLayout = ({ children }) => (
 );
 
 function App() {
+
+     console.log("VITE_API_URL =", import.meta.env.VITE_API_URL);
+     
     return (
         <BrowserRouter>
             <Toaster
