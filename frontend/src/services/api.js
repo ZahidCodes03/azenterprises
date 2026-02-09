@@ -134,6 +134,35 @@ export const verifyToken = () => api.get("/admin/verify");
 
 export const submitContact = (data) =>
   api.post("/contact", data);
+/* ============================================
+   ✅ Invoice APIs (RESTORED)
+============================================ */
+
+export const getInvoiceItems = () =>
+  api.get("/invoices/items");
+
+export const createInvoice = (data) =>
+  api.post("/invoices", data);
+
+export const getInvoices = () =>
+  api.get("/invoices");
+
+export const getInvoice = (id) =>
+  api.get(`/invoices/${id}`);
+
+export const getInvoicePDF = (id) =>
+  api.get(`/invoices/${id}/pdf`, {
+    responseType: "blob",
+  });
+
+export const generateInvoicePDF = (data) =>
+  api.post("/invoices/generate-pdf", data, {
+    responseType: "blob",
+  });
+
+export const getNextInvoiceNumber = () =>
+  api.get("/invoices/next/number");
+
 
 
 export default api;
