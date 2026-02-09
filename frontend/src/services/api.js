@@ -128,5 +128,12 @@ export const verifyToken = () => api.get("/admin/verify");
 /* ============================================
    ✅ Export Axios Instance
 ============================================ */
+/* ============================================
+   ✅ Contact API (FIXED BACK)
+============================================ */
+
+export const submitContact = (data) =>
+  api.post("/contact", data);
+
 
 export default api;
