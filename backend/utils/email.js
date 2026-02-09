@@ -48,7 +48,7 @@ const safeSendMail = async (mailOptions) => {
 ========================================= */
 const sendBookingConfirmation = async (booking) => {
   return safeSendMail({
-    from: `"A Z ENTERPRISES" <${process.env.SMTP_USER}>`,
+    from: `"A Z ENTERPRISES" <${process.env.FROM_EMAIL}>`,
     to: booking.email,
     subject: "Booking Confirmation - A Z ENTERPRISES",
     html: `
@@ -66,7 +66,7 @@ const sendBookingConfirmation = async (booking) => {
 ========================================= */
 const sendStatusUpdate = async (booking, newStatus) => {
   return safeSendMail({
-    from: `"A Z ENTERPRISES" <${process.env.SMTP_USER}>`,
+    from: `"A Z ENTERPRISES" <${process.env.FROM_EMAIL}>`,
     to: booking.email,
     subject: `Booking Status Updated: ${newStatus}`,
     html: `
@@ -82,7 +82,7 @@ const sendStatusUpdate = async (booking, newStatus) => {
 ========================================= */
 const sendOTPEmail = async (email, otp) => {
   return safeSendMail({
-    from: `"A Z ENTERPRISES Admin" <${process.env.SMTP_USER}>`,
+    from: `"A Z ENTERPRISES Admin" <${process.env.FROM_EMAIL}>`,
     to: email,
     subject: "Your OTP for Admin Login - A Z ENTERPRISES",
     html: `
