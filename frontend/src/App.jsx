@@ -7,16 +7,16 @@ import Footer from "./components/Footer";
 
 
 /* Public Pages */
-import Home from "../pages/Home";
-import Booking from "../pages/Booking";
+import Home from "./pages/Home";
+import Booking from "./pages/Booking";
 
-/* Admin Pages */
-import AdminLogin from "../pages/AdminLogin";
-import AdminLayout from "../pages/AdminLayout";
-import Dashboard from "../pages/Dashboard";
-import AdminBookings from "../pages/AdminBookings";
-import Customers from "../pages/Customers";
-import Invoices from "../pages/Invoices";
+import AdminLogin from "./pages/AdminLogin";
+import AdminLayout from "./pages/AdminLayout";
+import Dashboard from "./pages/Dashboard";
+import AdminBookings from "./pages/AdminBookings";
+import Customers from "./pages/Customers";
+import Invoices from "./pages/Invoices";
+
 
 /* Public Layout Wrapper */
 const PublicLayout = ({ children }) => (
