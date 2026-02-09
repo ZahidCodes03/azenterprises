@@ -2,7 +2,7 @@ const axios = require("axios");
 require("dotenv").config();
 
 /* =========================================
-   ✅ Brevo Email API Sender (No SMTP Needed)
+   ✅ Brevo Email API Sender
 ========================================= */
 
 const sendEmailBrevo = async ({ to, subject, html }) => {
@@ -31,7 +31,10 @@ const sendEmailBrevo = async ({ to, subject, html }) => {
     console.log("✅ Email sent successfully via Brevo API!");
     return response.data;
   } catch (error) {
-    console.error("❌ Brevo API Email Failed:", error.response?.data || error.message);
+    console.error(
+      "❌ Brevo API Email Failed:",
+      error.response?.data || error.message
+    );
     return null;
   }
 };
@@ -82,8 +85,34 @@ const sendStatusUpdate = async (booking, newStatus) => {
   });
 };
 
+/* =========================================
+   ✅ Contact Form Notification Email (NEW)
+========================================= */
+const sendContactNotification = async (contact) => {
+  return sendEmailBrevo({
+    to: "zahidqureshi1003@gmail.com",
+    subject: "📩 New Contact Message - A Z ENTERPRISES",
+    html: `
+      <h2>New Contact Form Submission</h2>
+
+      <p><b>Name:</b> ${contact.name}</p>
+      <p><b>Email:</b> ${contact.email}</p>
+      <p><b>Phone:</b> ${contact.phone || "Not Provided"}</p>
+
+      <hr/>
+
+      <p><b>Message:</b></p>
+      <p>${contact.message}</p>
+
+      <br/>
+      <p>— A Z Enterprises Website</p>
+    `,
+  });
+};
+
 module.exports = {
   sendOTPEmail,
   sendBookingConfirmation,
   sendStatusUpdate,
+  sendContactNotification,
 };
