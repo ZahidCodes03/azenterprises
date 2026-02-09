@@ -19,7 +19,8 @@ const AdminBookings = () => {
         },
       });
 
-      setBookings(res.data.bookings || []);
+      // ✅ Backend returns array directly, not { bookings: [] }
+      setBookings(res.data || []);
       setLoading(false);
     } catch (error) {
       console.error("❌ Error fetching bookings:", error);
@@ -49,7 +50,7 @@ const AdminBookings = () => {
               <tr>
                 <th className="p-2 border">Customer</th>
                 <th className="p-2 border">Phone</th>
-                <th className="p-2 border">Service</th>
+                <th className="p-2 border">Requirement</th>
                 <th className="p-2 border">Status</th>
                 <th className="p-2 border">Date</th>
               </tr>
@@ -60,10 +61,14 @@ const AdminBookings = () => {
                 <tr key={b.id}>
                   <td className="p-2 border">{b.name}</td>
                   <td className="p-2 border">{b.phone}</td>
-                  <td className="p-2 border">{b.service}</td>
+
+                  {/* ✅ Correct field name */}
+                  <td className="p-2 border">{b.requirement}</td>
+
                   <td className="p-2 border">{b.status}</td>
+
                   <td className="p-2 border">
-                    {new Date(b.created_at).toLocaleDateString()}
+                    {new Date(b.created_at).toLocaleDateString("en-IN")}
                   </td>
                 </tr>
               ))}
