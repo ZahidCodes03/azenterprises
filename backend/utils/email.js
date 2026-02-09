@@ -1,62 +1,68 @@
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 require("dotenv").config();
 
 /* =========================================
-   ✅ SMTP Transporter (Brevo + Render Safe)
+   ✅ Brevo Email API Sender (No SMTP Needed)
 ========================================= */
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
-
-  port: Number(process.env.SMTP_PORT) || 587,
-
-  // ✅ Brevo uses secure = false for port 587
-  secure: false,
-
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-
-  // ✅ Prevent hanging forever on Render
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
-
-/* =========================================
-   ✅ Safe SendMail Wrapper
-========================================= */
-const safeSendMail = async (mailOptions) => {
+const sendEmailBrevo = async ({ to, subject, html }) => {
   try {
-    console.log("📩 Sending email to:", mailOptions.to);
+    console.log("📩 Sending email via Brevo API to:", to);
 
-    const info = await transporter.sendMail(mailOptions);
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "A Z ENTERPRISES",
+          email: process.env.FROM_EMAIL,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      },
+      {
+        headers: {
+          "api-key": process.env.BREVO_API_KEY,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    console.log("✅ Email sent successfully!");
-    return info;
+    console.log("✅ Email sent successfully via Brevo API!");
+    return response.data;
   } catch (error) {
-    console.error("❌ Email send failed:", error.message);
-
-    // ✅ Do not crash server
+    console.error("❌ Brevo API Email Failed:", error.response?.data || error.message);
     return null;
   }
+};
+
+/* =========================================
+   ✅ OTP Email
+========================================= */
+const sendOTPEmail = async (email, otp) => {
+  return sendEmailBrevo({
+    to: email,
+    subject: "Your OTP for Admin Login - A Z ENTERPRISES",
+    html: `
+      <h2>Your Admin OTP Code</h2>
+      <p>Use this OTP to login:</p>
+      <h1 style="color:green;">${otp}</h1>
+      <p>This OTP is valid for 10 minutes.</p>
+    `,
+  });
 };
 
 /* =========================================
    ✅ Booking Confirmation Email
 ========================================= */
 const sendBookingConfirmation = async (booking) => {
-  return safeSendMail({
-    from: `"A Z ENTERPRISES" <${process.env.FROM_EMAIL}>`,
+  return sendEmailBrevo({
     to: booking.email,
     subject: "Booking Confirmation - A Z ENTERPRISES",
     html: `
       <h2>Thank you for your booking, ${booking.name}!</h2>
       <p>Your booking request has been received.</p>
       <p><b>Requirement:</b> ${booking.requirement}</p>
-      <p><b>Preferred Date:</b> ${booking.preferred_date}</p>
-      <p>We will contact you soon.</p>
     `,
   });
 };
@@ -65,8 +71,7 @@ const sendBookingConfirmation = async (booking) => {
    ✅ Status Update Email
 ========================================= */
 const sendStatusUpdate = async (booking, newStatus) => {
-  return safeSendMail({
-    from: `"A Z ENTERPRISES" <${process.env.FROM_EMAIL}>`,
+  return sendEmailBrevo({
     to: booking.email,
     subject: `Booking Status Updated: ${newStatus}`,
     html: `
@@ -77,26 +82,8 @@ const sendStatusUpdate = async (booking, newStatus) => {
   });
 };
 
-/* =========================================
-   ✅ OTP Email
-========================================= */
-const sendOTPEmail = async (email, otp) => {
-  return safeSendMail({
-    from: `"A Z ENTERPRISES Admin" <${process.env.FROM_EMAIL}>`,
-    to: email,
-    subject: "Your OTP for Admin Login - A Z ENTERPRISES",
-    html: `
-      <h2>Your Admin OTP Code</h2>
-      <p>Use this OTP to login:</p>
-      <h1 style="color:green;">${otp}</h1>
-      <p>This OTP is valid for 10 minutes.</p>
-      <p style="color:red;">Do not share it with anyone.</p>
-    `,
-  });
-};
-
 module.exports = {
+  sendOTPEmail,
   sendBookingConfirmation,
   sendStatusUpdate,
-  sendOTPEmail,
 };
