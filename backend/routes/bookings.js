@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
 
 const pool = require("../config/database");
 const { sendBookingConfirmation, sendStatusUpdate } = require("../utils/email");
@@ -31,7 +29,14 @@ router.post(
         req.body;
 
       // ✅ Validate required fields
-      if (!name || !phone || !email || !address || !requirement || !preferredDate) {
+      if (
+        !name ||
+        !phone ||
+        !email ||
+        !address ||
+        !requirement ||
+        !preferredDate
+      ) {
         return res.status(400).json({ error: "All fields are required" });
       }
 
@@ -42,7 +47,8 @@ router.post(
         !req.files?.bankPassbook
       ) {
         return res.status(400).json({
-          error: "All documents are required (Aadhar, Electricity Bill, Bank Passbook)",
+          error:
+            "All documents are required (Aadhar, Electricity Bill, Bank Passbook)",
         });
       }
 
@@ -74,7 +80,7 @@ router.post(
 
       const booking = result.rows[0];
 
-      // ✅ Send Confirmation Email (do not block booking)
+      // ✅ Send Confirmation Email
       await sendBookingConfirmation(booking);
 
       res.status(201).json({
@@ -130,6 +136,48 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("Update status error:", error);
     res.status(500).json({ error: "Failed to update status" });
+  }
+});
+
+/* =========================================
+   ✅ GET: Booking Document View/Download
+========================================= */
+router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
+  try {
+    const { id, docType } = req.params;
+
+    // Allowed document types
+    const allowedDocs = {
+      aadhar: "aadhar_file",
+      electricityBill: "electricity_bill_file",
+      bankPassbook: "bank_passbook_file",
+    };
+
+    if (!allowedDocs[docType]) {
+      return res.status(400).json({ error: "Invalid document type" });
+    }
+
+    // Fetch booking from DB
+    const result = await pool.query("SELECT * FROM bookings WHERE id=$1", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    const booking = result.rows[0];
+
+    // Get correct file URL
+    const fileUrl = booking[allowedDocs[docType]];
+
+    if (!fileUrl) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+
+    // Redirect to Cloudinary file
+    return res.redirect(fileUrl);
+  } catch (error) {
+    console.error("Document fetch error:", error);
+    res.status(500).json({ error: "Failed to fetch document" });
   }
 });
 
