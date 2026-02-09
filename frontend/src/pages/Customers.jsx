@@ -46,15 +46,16 @@ const Customers = () => {
     }
   };
 
+  /* ============================================
+     ✅ FIXED Document Viewer
+     Backend returns: { url: "cloudinary-link" }
+  ============================================ */
   const handleViewDocument = async (bookingId, docType) => {
     try {
       const response = await getBookingDocument(bookingId, docType);
 
-      const url = window.URL.createObjectURL(
-        new Blob([response.data])
-      );
-
-      window.open(url, "_blank");
+      // ✅ Open Cloudinary URL directly
+      window.open(response.data.url, "_blank");
     } catch (error) {
       console.error("Document error:", error);
       toast.error("Failed to load document");
@@ -135,53 +136,6 @@ const Customers = () => {
         <div className="lg:col-span-2">
           {selectedCustomer ? (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* Customer Header */}
-              <div className="p-6 bg-gradient-to-r from-primary-600 to-primary-500 text-white">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-                    <FiUser className="w-8 h-8" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold">
-                      {selectedCustomer.name}
-                    </h2>
-                    <p className="text-white/80">
-                      {selectedCustomer.requirement}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Contact Info */}
-              <div className="p-6 border-b border-gray-100">
-                <h3 className="font-semibold text-gray-900 mb-4">
-                  Contact Information
-                </h3>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-3">
-                    <FiPhone className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-700">
-                      {selectedCustomer.phone}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-3">
-                    <FiMail className="w-5 h-5 text-gray-400" />
-                    <span className="text-gray-700">
-                      {selectedCustomer.email}
-                    </span>
-                  </div>
-
-                  <div className="flex items-start space-x-3 sm:col-span-2">
-                    <FiMapPin className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">
-                      {selectedCustomer.address}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
               {/* Documents */}
               <div className="p-6 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900 mb-4">
@@ -189,7 +143,6 @@ const Customers = () => {
                 </h3>
 
                 <div className="grid grid-cols-3 gap-3">
-                  {/* Aadhar */}
                   <button
                     onClick={() =>
                       handleViewDocument(selectedCustomer.id, "aadhar")
@@ -197,12 +150,9 @@ const Customers = () => {
                     className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
                   >
                     <FiDownload className="w-6 h-6 mx-auto mb-2" />
-                    <span className="text-sm font-medium">
-                      Aadhar Card
-                    </span>
+                    <span className="text-sm font-medium">Aadhar Card</span>
                   </button>
 
-                  {/* Electricity Bill ✅ FIXED */}
                   <button
                     onClick={() =>
                       handleViewDocument(
@@ -218,7 +168,6 @@ const Customers = () => {
                     </span>
                   </button>
 
-                  {/* Bank Passbook ✅ FIXED */}
                   <button
                     onClick={() =>
                       handleViewDocument(
@@ -229,9 +178,7 @@ const Customers = () => {
                     className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
                   >
                     <FiDownload className="w-6 h-6 mx-auto mb-2" />
-                    <span className="text-sm font-medium">
-                      Bank Passbook
-                    </span>
+                    <span className="text-sm font-medium">Bank Passbook</span>
                   </button>
                 </div>
               </div>
@@ -251,3 +198,4 @@ const Customers = () => {
 };
 
 export default Customers;
+

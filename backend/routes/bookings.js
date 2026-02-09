@@ -102,6 +102,7 @@ router.get("/", authenticateToken, async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM bookings ORDER BY created_at DESC"
     );
+
     res.json(result.rows);
   } catch (error) {
     console.error("Get bookings error:", error);
@@ -140,7 +141,8 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
 });
 
 /* =========================================
-   ✅ GET: Booking Document View/Download
+   ✅ GET: Booking Document URL (FIXED)
+   ✅ No Redirect (Prevents Admin Logout)
 ========================================= */
 router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
   try {
@@ -173,8 +175,8 @@ router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Document not found" });
     }
 
-    // Redirect to Cloudinary file
-    return res.redirect(fileUrl);
+    // ✅ Send URL instead of redirect
+    return res.json({ url: fileUrl });
   } catch (error) {
     console.error("Document fetch error:", error);
     res.status(500).json({ error: "Failed to fetch document" });

@@ -1,19 +1,12 @@
 import axios from "axios";
 
 /* ============================================
-   ✅ Backend Base URL Setup (Netlify + Local)
+   ✅ Backend Base URL Setup
 ============================================ */
-
-/*
-  Netlify Environment Variable MUST be:
-
-  VITE_BACKEND_URL = https://azenterprises-backend.onrender.com
-*/
 
 const BACKEND_URL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
-// Always attach /api because backend routes start with /api
 const API_BASE_URL = `${BACKEND_URL}/api`;
 
 /* ============================================
@@ -49,8 +42,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      console.warn("⚠️ Unauthorized! Logging out...");
-
       localStorage.removeItem("adminToken");
 
       if (
@@ -76,28 +67,20 @@ export const createBooking = (formData) =>
     },
   });
 
-export const getBookings = (params) => api.get("/bookings", { params });
+export const getBookings = (params) =>
+  api.get("/bookings", { params });
 
 export const updateBookingStatus = (id, status) =>
   api.put(`/bookings/${id}/status`, { status });
 
 /* ============================================
-   ✅ Booking Document API (FIXED)
+   ✅ Booking Document API (FINAL FIX)
+   Backend returns { url: ... }
 ============================================ */
 
-/*
-  Backend accepts ONLY:
-  - aadhar
-  - electricityBill
-  - bankPassbook
-*/
-
-// Safety mapping (prevents frontend mistakes)
 const documentTypeMap = {
   aadhar: "aadhar",
-  electricity: "electricityBill",
   electricityBill: "electricityBill",
-  passbook: "bankPassbook",
   bankPassbook: "bankPassbook",
 };
 
@@ -105,12 +88,11 @@ export const getBookingDocument = (id, type) => {
   const correctType = documentTypeMap[type];
 
   if (!correctType) {
-    throw new Error("Invalid document type requested: " + type);
+    throw new Error("Invalid document type: " + type);
   }
 
-  return api.get(`/bookings/${id}/documents/${correctType}`, {
-    responseType: "blob",
-  });
+  // ✅ No blob, backend sends JSON url
+  return api.get(`/bookings/${id}/documents/${correctType}`);
 };
 
 /* ============================================
@@ -123,19 +105,18 @@ export const adminLogin = (email, password) =>
 export const verifyOTP = (email, otp) =>
   api.post("/admin/verify-otp", { email, otp });
 
-export const verifyToken = () => api.get("/admin/verify");
+export const verifyToken = () =>
+  api.get("/admin/verify");
 
 /* ============================================
-   ✅ Export Axios Instance
-============================================ */
-/* ============================================
-   ✅ Contact API (FIXED BACK)
+   ✅ Contact API
 ============================================ */
 
 export const submitContact = (data) =>
   api.post("/contact", data);
+
 /* ============================================
-   ✅ Invoice APIs (RESTORED)
+   ✅ Invoice APIs
 ============================================ */
 
 export const getInvoiceItems = () =>
@@ -163,6 +144,8 @@ export const generateInvoicePDF = (data) =>
 export const getNextInvoiceNumber = () =>
   api.get("/invoices/next/number");
 
-
+/* ============================================
+   ✅ Export Axios Instance
+============================================ */
 
 export default api;
