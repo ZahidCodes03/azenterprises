@@ -24,7 +24,7 @@ const Customers = () => {
     try {
       const response = await getBookings({ search: searchTerm });
 
-      // Group by customer (email as unique identifier)
+      // Group bookings by customer email
       const customerMap = {};
 
       response.data.forEach((booking) => {
@@ -47,14 +47,13 @@ const Customers = () => {
   };
 
   /* ============================================
-     ✅ FIXED Document Viewer
-     Backend returns: { url: "cloudinary-link" }
+     ✅ View Uploaded Documents
   ============================================ */
   const handleViewDocument = async (bookingId, docType) => {
     try {
       const response = await getBookingDocument(bookingId, docType);
 
-      // ✅ Open Cloudinary URL directly
+      // Open Cloudinary URL directly
       window.open(response.data.url, "_blank");
     } catch (error) {
       console.error("Document error:", error);
@@ -70,7 +69,7 @@ const Customers = () => {
           Customer Management
         </h1>
         <p className="text-gray-600">
-          View customer details and booking history
+          View customer details, bookings and uploaded documents
         </p>
       </div>
 
@@ -136,7 +135,52 @@ const Customers = () => {
         <div className="lg:col-span-2">
           {selectedCustomer ? (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* Documents */}
+              {/* ✅ Customer Info Section */}
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                  Customer Details
+                </h2>
+
+                <div className="space-y-3 text-sm">
+                  <p className="flex items-center gap-2 text-gray-700">
+                    <FiUser className="text-primary-600" />
+                    <span className="font-medium">Name:</span>{" "}
+                    {selectedCustomer.name}
+                  </p>
+
+                  <p className="flex items-center gap-2 text-gray-700">
+                    <FiMail className="text-primary-600" />
+                    <span className="font-medium">Email:</span>{" "}
+                    {selectedCustomer.email}
+                  </p>
+
+                  <p className="flex items-center gap-2 text-gray-700">
+                    <FiPhone className="text-primary-600" />
+                    <span className="font-medium">Phone:</span>{" "}
+                    {selectedCustomer.phone || "Not Provided"}
+                  </p>
+
+                  <p className="flex items-center gap-2 text-gray-700">
+                    <FiMapPin className="text-primary-600" />
+                    <span className="font-medium">Address:</span>{" "}
+                    {selectedCustomer.address || "Not Provided"}
+                  </p>
+
+                  <p className="text-gray-700">
+                    <span className="font-medium">Package:</span>{" "}
+                    {selectedCustomer.package || "Not Selected"}
+                  </p>
+
+                  <p className="text-gray-700">
+                    <span className="font-medium">Status:</span>{" "}
+                    <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                      {selectedCustomer.status || "Pending"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* ✅ Documents Section */}
               <div className="p-6 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900 mb-4">
                   Uploaded Documents
@@ -170,10 +214,7 @@ const Customers = () => {
 
                   <button
                     onClick={() =>
-                      handleViewDocument(
-                        selectedCustomer.id,
-                        "bankPassbook"
-                      )
+                      handleViewDocument(selectedCustomer.id, "bankPassbook")
                     }
                     className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
                   >
@@ -198,4 +239,3 @@ const Customers = () => {
 };
 
 export default Customers;
-
