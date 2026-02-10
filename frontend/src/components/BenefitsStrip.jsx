@@ -5,7 +5,7 @@ const BenefitsStrip = () => {
         {
             icon: FiDollarSign,
             title: 'PM Surya Ghar Subsidy',
-            description: 'Up to ₹78,000 assistance',
+            description: 'Up to ₹95,000 assistance',
         },
         {
             icon: FiAward,
@@ -15,7 +15,7 @@ const BenefitsStrip = () => {
         {
             icon: FiClock,
             title: 'Fast Installation',
-            description: 'Complete within 3-5 days',
+            description: 'Complete within 8-10 days',
         },
         {
             icon: FiShield,

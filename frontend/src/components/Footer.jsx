@@ -33,14 +33,14 @@ const Footer = () => {
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold">A Z ENTERPRISES</h3>
-                                <p className="text-sm text-primary-400">Solar Distributors/Installation</p>
+                                <p className="text-sm text-primary-400">Solar Distributors / Installation</p>
                             </div>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Government approved solar installation with PM Surya Ghar subsidy support.
                             Serving Kashmir with quality solar solutions and 25 years panel warranty.
                         </p>
-                        <div className="flex space-x-3">
+                        {/* <div className="flex space-x-3">
                             <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary-600 transition-all">
                                 <FiFacebook className="w-5 h-5" />
                             </a>
@@ -50,7 +50,7 @@ const Footer = () => {
                             <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800 hover:bg-primary-600 transition-all">
                                 <FiTwitter className="w-5 h-5" />
                             </a>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* Quick Links */}

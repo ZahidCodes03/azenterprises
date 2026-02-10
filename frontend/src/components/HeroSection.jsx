@@ -37,7 +37,7 @@ const HeroSection = () => {
             style={{ animationDelay: "0.1s" }}
           >
             Government Approved Solar Installation with PM Surya Ghar Subsidy
-            Support. Get up to ₹78,000 subsidy on your solar installation.
+            Support. Get up to ₹95,000 subsidy on your solar installation.
           </p>
 
           {/* CTA Buttons */}
@@ -76,7 +76,7 @@ const HeroSection = () => {
             </div>
 
             <div>
-              <p className="text-3xl lg:text-4xl font-bold text-white">₹78K</p>
+              <p className="text-3xl lg:text-4xl font-bold text-white">₹95K</p>
               <p className="text-sm text-white/60 mt-1">Max Subsidy</p>
             </div>
           </div>

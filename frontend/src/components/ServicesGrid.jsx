@@ -5,7 +5,7 @@ const ServicesGrid = () => {
         {
             icon: FiHome,
             title: 'Residential Solar Installation',
-            description: 'Complete rooftop solar solutions for homes with PM Surya Ghar subsidy support. Reduce your electricity bill by up to 90%.',
+            description: 'Complete rooftop solar solutions for homes with PM Surya Ghar subsidy support. Reduce your electricity bill by up to 98%.',
             features: ['Net Metering', 'Grid Connected', 'Battery Backup'],
         },
         {

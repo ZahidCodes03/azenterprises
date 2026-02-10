@@ -118,6 +118,33 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+    console.log("✅ Status update:", id, status);
+
+    // ✅ Auto-delete if rejected
+    if (status === "Rejected") {
+      const bookingResult = await pool.query(
+        "SELECT * FROM bookings WHERE id=$1",
+        [id]
+      );
+
+      const bookingData = bookingResult.rows[0];
+
+      if (!bookingData) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+
+      // Delete booking
+      await pool.query("DELETE FROM bookings WHERE id=$1", [id]);
+
+      // Send rejection email
+      await sendStatusUpdate(bookingData, status);
+
+      return res.json({
+        message: "Booking rejected and deleted successfully ✅",
+      });
+    }
+
+    // Normal status update
     const result = await pool.query(
       `UPDATE bookings 
        SET status=$1, updated_at=CURRENT_TIMESTAMP
@@ -131,7 +158,7 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
     await sendStatusUpdate(updatedBooking, status);
 
     res.json({
-      message: "Booking status updated successfully",
+      message: "Booking status updated successfully ✅",
       booking: updatedBooking,
     });
   } catch (error) {
@@ -141,14 +168,41 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
 });
 
 /* =========================================
-   ✅ GET: Booking Document URL (FIXED)
-   ✅ No Redirect (Prevents Admin Logout)
+   ✅ DELETE: Delete Booking Manually (NEW)
+========================================= */
+router.delete("/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log("🗑 Delete request received for booking:", id);
+
+    // Check booking exists
+    const bookingResult = await pool.query(
+      "SELECT * FROM bookings WHERE id=$1",
+      [id]
+    );
+
+    if (bookingResult.rows.length === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // Delete booking
+    await pool.query("DELETE FROM bookings WHERE id=$1", [id]);
+
+    res.json({ message: "Booking deleted successfully ✅" });
+  } catch (error) {
+    console.error("Delete booking error:", error);
+    res.status(500).json({ error: "Failed to delete booking" });
+  }
+});
+
+/* =========================================
+   ✅ GET: Booking Document URL
 ========================================= */
 router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
   try {
     const { id, docType } = req.params;
 
-    // Allowed document types
     const allowedDocs = {
       aadhar: "aadhar_file",
       electricityBill: "electricity_bill_file",
@@ -159,7 +213,6 @@ router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
       return res.status(400).json({ error: "Invalid document type" });
     }
 
-    // Fetch booking from DB
     const result = await pool.query("SELECT * FROM bookings WHERE id=$1", [id]);
 
     if (result.rows.length === 0) {
@@ -167,15 +220,12 @@ router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
     }
 
     const booking = result.rows[0];
-
-    // Get correct file URL
     const fileUrl = booking[allowedDocs[docType]];
 
     if (!fileUrl) {
       return res.status(404).json({ error: "Document not found" });
     }
 
-    // ✅ Send URL instead of redirect
     return res.json({ url: fileUrl });
   } catch (error) {
     console.error("Document fetch error:", error);

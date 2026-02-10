@@ -8,7 +8,12 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
-import { getBookings, getBookingDocument } from "../services/api";
+
+import {
+  getBookings,
+  getBookingDocument,
+  updateBookingStatus,
+} from "../services/api";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
@@ -20,11 +25,11 @@ const Customers = () => {
     fetchCustomers();
   }, [searchTerm]);
 
+  // ✅ Fetch Customers + Group by Email
   const fetchCustomers = async () => {
     try {
       const response = await getBookings({ search: searchTerm });
 
-      // Group bookings by customer email
       const customerMap = {};
 
       response.data.forEach((booking) => {
@@ -46,17 +51,12 @@ const Customers = () => {
     }
   };
 
-  /* ============================================
-     ✅ View Uploaded Documents
-  ============================================ */
+  // ✅ View Uploaded Documents
   const handleViewDocument = async (bookingId, docType) => {
     try {
       const response = await getBookingDocument(bookingId, docType);
-
-      // Open Cloudinary URL directly
       window.open(response.data.url, "_blank");
     } catch (error) {
-      console.error("Document error:", error);
       toast.error("Failed to load document");
     }
   };
@@ -69,7 +69,7 @@ const Customers = () => {
           Customer Management
         </h1>
         <p className="text-gray-600">
-          View customer details, bookings and uploaded documents
+          View customer details, bookings, documents and update booking status
         </p>
       </div>
 
@@ -109,7 +109,7 @@ const Customers = () => {
                 }`}
               >
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600">
                     <FiUser className="w-6 h-6" />
                   </div>
 
@@ -135,7 +135,7 @@ const Customers = () => {
         <div className="lg:col-span-2">
           {selectedCustomer ? (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              {/* ✅ Customer Info Section */}
+              {/* Customer Info */}
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">
                   Customer Details
@@ -157,30 +157,23 @@ const Customers = () => {
                   <p className="flex items-center gap-2 text-gray-700">
                     <FiPhone className="text-primary-600" />
                     <span className="font-medium">Phone:</span>{" "}
-                    {selectedCustomer.phone || "Not Provided"}
+                    {selectedCustomer.phone}
                   </p>
 
                   <p className="flex items-center gap-2 text-gray-700">
                     <FiMapPin className="text-primary-600" />
                     <span className="font-medium">Address:</span>{" "}
-                    {selectedCustomer.address || "Not Provided"}
+                    {selectedCustomer.address}
                   </p>
 
                   <p className="text-gray-700">
                     <span className="font-medium">Package:</span>{" "}
-                    {selectedCustomer.package || "Not Selected"}
-                  </p>
-
-                  <p className="text-gray-700">
-                    <span className="font-medium">Status:</span>{" "}
-                    <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
-                      {selectedCustomer.status || "Pending"}
-                    </span>
+                    {selectedCustomer.requirement}
                   </p>
                 </div>
               </div>
 
-              {/* ✅ Documents Section */}
+              {/* Documents */}
               <div className="p-6 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900 mb-4">
                   Uploaded Documents
@@ -191,10 +184,10 @@ const Customers = () => {
                     onClick={() =>
                       handleViewDocument(selectedCustomer.id, "aadhar")
                     }
-                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
+                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50"
                   >
                     <FiDownload className="w-6 h-6 mx-auto mb-2" />
-                    <span className="text-sm font-medium">Aadhar Card</span>
+                    Aadhar
                   </button>
 
                   <button
@@ -204,28 +197,100 @@ const Customers = () => {
                         "electricityBill"
                       )
                     }
-                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
+                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50"
                   >
                     <FiDownload className="w-6 h-6 mx-auto mb-2" />
-                    <span className="text-sm font-medium">
-                      Electricity Bill
-                    </span>
+                    Bill
                   </button>
 
                   <button
                     onClick={() =>
                       handleViewDocument(selectedCustomer.id, "bankPassbook")
                     }
-                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50 hover:text-primary-700 transition-all"
+                    className="p-4 bg-gray-50 rounded-xl text-center hover:bg-primary-50"
                   >
                     <FiDownload className="w-6 h-6 mx-auto mb-2" />
-                    <span className="text-sm font-medium">Bank Passbook</span>
+                    Passbook
                   </button>
+                </div>
+              </div>
+
+              {/* ✅ Booking History + Status Update Per Booking */}
+              <div className="p-6">
+                <h3 className="font-semibold text-gray-900 mb-4">
+                  Booking History (Update Status Per Booking)
+                </h3>
+
+                <div className="space-y-4">
+                  {selectedCustomer.bookings.map((b) => (
+                    <div
+                      key={b.id}
+                      className="p-4 rounded-xl border bg-gray-50 space-y-3"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-medium text-gray-800">
+                            Requirement: {b.requirement}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Date:{" "}
+                            {new Date(b.preferred_date).toLocaleDateString()}
+                          </p>
+                        </div>
+
+                        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary-100 text-primary-700">
+                          {b.status}
+                        </span>
+                      </div>
+
+                      {/* Status Dropdown */}
+                      <select
+                        value={b.status}
+                        onChange={(e) => {
+                          const updatedBookings =
+                            selectedCustomer.bookings.map((booking) =>
+                              booking.id === b.id
+                                ? { ...booking, status: e.target.value }
+                                : booking
+                            );
+
+                          setSelectedCustomer({
+                            ...selectedCustomer,
+                            bookings: updatedBookings,
+                          });
+                        }}
+                        className="w-full border rounded-lg px-3 py-2 text-sm"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Completed">Completed</option>
+                      </select>
+
+                      {/* Save Button */}
+                      <button
+                        onClick={async () => {
+                          try {
+                            await updateBookingStatus(b.id, b.status);
+
+                            toast.success("Booking Status Updated ✅");
+
+                            fetchCustomers();
+                          } catch (err) {
+                            toast.error("Failed to update booking ❌");
+                          }
+                        }}
+                        className="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700"
+                      >
+                        Save This Booking Status
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            <div className="bg-white rounded-xl p-12 text-center">
               <FiUser className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <p className="text-gray-500">
                 Select a customer to view details

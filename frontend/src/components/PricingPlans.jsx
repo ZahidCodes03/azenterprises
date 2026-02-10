@@ -6,9 +6,9 @@ const PricingPlans = () => {
         {
             name: '3kW Package',
             subtitle: 'Ideal for Small Homes',
-            price: '₹1,50,000',
+            price: '₹2,10,000',
             priceNote: 'Starting Price',
-            subsidy: 'Up to ₹78,000 Subsidy',
+            subsidy: 'Up to ₹95,000 Subsidy',
             popular: false,
             features: [
                 'Premium Solar Panels',
@@ -25,7 +25,7 @@ const PricingPlans = () => {
             subtitle: 'Best for Medium Homes',
             price: '₹2,50,000',
             priceNote: 'Starting Price',
-            subsidy: 'Up to ₹78,000 Subsidy',
+            subsidy: 'Up to ₹95,000 Subsidy',
             popular: true,
             features: [
                 'Premium Solar Panels',

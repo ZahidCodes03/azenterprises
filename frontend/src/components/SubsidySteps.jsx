@@ -24,7 +24,7 @@ const SubsidySteps = () => {
             icon: FiTool,
             step: '04',
             title: 'Installation',
-            description: 'Professional installation by our trained technicians within 3-5 working days.',
+            description: 'Professional installation by our trained technicians within 8-10 working days.',
         },
         {
             icon: FiDollarSign,
@@ -90,15 +90,15 @@ const SubsidySteps = () => {
                             </h3>
                             <div className="grid sm:grid-cols-3 gap-4 text-center">
                                 <div className="p-4 bg-white/10 rounded-xl">
-                                    <p className="text-3xl font-bold text-yellow-400">₹30,000</p>
+                                    <p className="text-3xl font-bold text-yellow-400">₹94,800</p>
                                     <p className="text-sm text-white/80 mt-1">For 1-2 kW System</p>
                                 </div>
                                 <div className="p-4 bg-white/10 rounded-xl">
-                                    <p className="text-3xl font-bold text-yellow-400">₹60,000</p>
+                                    <p className="text-3xl font-bold text-yellow-400">₹94,800</p>
                                     <p className="text-sm text-white/80 mt-1">For 2-3 kW System</p>
                                 </div>
                                 <div className="p-4 bg-white/10 rounded-xl">
-                                    <p className="text-3xl font-bold text-yellow-400">₹78,000</p>
+                                    <p className="text-3xl font-bold text-yellow-400">₹94,800</p>
                                     <p className="text-sm text-white/80 mt-1">For 3+ kW System</p>
                                 </div>
                             </div>

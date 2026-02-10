@@ -42,7 +42,7 @@ const Testimonials = () => {
             name: 'Shabir Ahmad',
             location: 'Bandipora',
             rating: 5,
-            text: 'Got subsidy of ₹78,000 and the system is working great even in winter. A Z Enterprises delivered on all their promises.',
+            text: 'Got subsidy of ₹95,000 and the system is working great even in winter. A Z Enterprises delivered on all their promises.',
             system: '3kW Solar System',
         },
     ];

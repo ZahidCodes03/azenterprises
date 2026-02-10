@@ -60,6 +60,7 @@ api.interceptors.response.use(
    ✅ Booking APIs
 ============================================ */
 
+// Create Booking (with documents upload)
 export const createBooking = (formData) =>
   api.post("/bookings", formData, {
     headers: {
@@ -67,15 +68,22 @@ export const createBooking = (formData) =>
     },
   });
 
+// Get All Bookings (Admin)
 export const getBookings = (params) =>
   api.get("/bookings", { params });
 
+// ✅ Update Booking Status (Pending → Approved etc.)
 export const updateBookingStatus = (id, status) =>
   api.put(`/bookings/${id}/status`, { status });
 
+// ✅ Delete Booking
+export const deleteBooking = (id) =>
+  api.delete(`/bookings/${id}`);
+
+
 /* ============================================
-   ✅ Booking Document API (FINAL FIX)
-   Backend returns { url: ... }
+   ✅ Booking Document API
+   Backend returns { url: "cloudinary-link" }
 ============================================ */
 
 const documentTypeMap = {
@@ -84,6 +92,7 @@ const documentTypeMap = {
   bankPassbook: "bankPassbook",
 };
 
+// View Document
 export const getBookingDocument = (id, type) => {
   const correctType = documentTypeMap[type];
 
@@ -91,7 +100,6 @@ export const getBookingDocument = (id, type) => {
     throw new Error("Invalid document type: " + type);
   }
 
-  // ✅ No blob, backend sends JSON url
   return api.get(`/bookings/${id}/documents/${correctType}`);
 };
 
