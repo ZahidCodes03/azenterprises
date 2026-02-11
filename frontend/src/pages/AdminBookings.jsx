@@ -6,7 +6,6 @@ const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Backend URL
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   // ✅ Fetch all bookings
@@ -28,22 +27,48 @@ const AdminBookings = () => {
     }
   };
 
-  // Load bookings on page open
   useEffect(() => {
     fetchBookings();
   }, []);
 
-  // ✅ Delete booking function
+  // ✅ Delete booking
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this booking?")) return;
+    if (!window.confirm("Are you sure you want to delete this booking?"))
+      return;
 
     try {
       await deleteBooking(id);
       alert("Booking Deleted Successfully ✅");
-      fetchBookings(); // Refresh list
+      fetchBookings();
     } catch (error) {
       alert("Failed to delete booking ❌");
       console.log(error);
+    }
+  };
+
+  // ✅ Update Booking Status Function (Lowercase Safe)
+  const handleStatusUpdate = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      // Force lowercase always
+      const statusToSend = newStatus.toLowerCase();
+
+      await axios.put(
+        `${BACKEND_URL}/api/bookings/${id}/status`,
+        { status: statusToSend },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert(`Status updated to ${statusToSend} ✅`);
+      fetchBookings();
+    } catch (error) {
+      console.error("❌ Status update failed:", error.response?.data || error);
+      alert("Failed to update status ❌");
     }
   };
 
@@ -60,7 +85,6 @@ const AdminBookings = () => {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full border border-gray-300">
-            {/* ✅ Table Header */}
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-2 border">Customer</th>
@@ -68,18 +92,31 @@ const AdminBookings = () => {
                 <th className="p-2 border">Requirement</th>
                 <th className="p-2 border">Status</th>
                 <th className="p-2 border">Date</th>
-                <th className="p-2 border">Action</th>
+                <th className="p-2 border">Actions</th>
               </tr>
             </thead>
 
-            {/* ✅ Table Body */}
             <tbody>
               {bookings.map((b) => (
                 <tr key={b.id}>
                   <td className="p-2 border">{b.name}</td>
                   <td className="p-2 border">{b.phone}</td>
                   <td className="p-2 border">{b.requirement}</td>
-                  <td className="p-2 border">{b.status}</td>
+
+                  {/* ✅ Status Dropdown */}
+                  <td className="p-2 border">
+                    <select
+                      value={b.status?.toLowerCase()}
+                      onChange={(e) =>
+                        handleStatusUpdate(b.id, e.target.value)
+                      }
+                      className="border px-2 py-1 rounded"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </td>
 
                   <td className="p-2 border">
                     {new Date(b.created_at).toLocaleDateString("en-IN")}

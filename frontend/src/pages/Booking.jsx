@@ -323,9 +323,14 @@ const Booking = () => {
                                         className="input-field"
                                     >
                                         <option value="">Select your requirement</option>
-                                        <option value="3kW">3kW - Small Home (₹2,10,000 approx - Hybrid)</option>
-                                        <option value="5kW">5kW - Medium Home (₹3,30,000 approx - Hybrid)</option>
-                                        <option value="10kW">10kW - Large Home/Small Business (₹5,50,000 approx - Hybrid)</option>
+                                        <option value="3kW">3kW - Small Home (₹1,60,000 approx - On Grid)</option>
+                                        <option value="4kW">4kW - Small Home (₹2,09,000 approx - On Grid)</option>
+                                        <option value="5kW">5kW - Medium Home (₹2,58,500 approx - On Grid)</option>
+                                        <option value="6kW">6kW - Medium Home (₹3,08,500 approx - On Grid)</option>
+                                        <option value="7kW">7kW - Large Home (₹3,57,500 approx - On Grid)</option>
+                                        <option value="8kW">8kW - Large Home (₹4,07,000 approx - On Grid)</option>
+                                        <option value="9kW">9kW - Large Home (₹4,56,500 approx - On Grid)</option>
+                                        <option value="10kW">10kW - Large Home/Small Business (₹5,06,000 approx - On Grid)</option>
                                         <option value="Commercial">Commercial - Above 10kW (Custom Quote)</option>
                                     </select>
                                 </div>

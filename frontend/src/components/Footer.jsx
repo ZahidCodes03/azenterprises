@@ -93,9 +93,9 @@ const Footer = () => {
                                     <p className="text-sm">6006780785</p>
                                 </div>
                             </a>
-                            <a href="mailto:azenterprises.solar@gmail.com" className="flex items-center space-x-3 text-gray-400 hover:text-primary-400 transition-all">
+                            <a href="mailto:azenterprises.solars@gmail.com" className="flex items-center space-x-3 text-gray-400 hover:text-primary-400 transition-all">
                                 <FiMail className="w-5 h-5 flex-shrink-0" />
-                                <span className="text-sm">azenterprises.solar@gmail.com</span>
+                                <span className="text-sm">azenterprises.solars@gmail.com</span>
                             </a>
                             <div className="flex items-start space-x-3 text-gray-400">
                                 <FiMapPin className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -119,11 +119,16 @@ const Footer = () => {
                         <p className="text-gray-500 text-sm text-center md:text-left">
                             © {currentYear} A Z ENTERPRISES. All rights reserved.
                         </p>
+                        <p className="text-green-400 text-sm">
+    Developed with &hearts; By Zahid Qureshi
+  </p>
                         <div className="flex items-center space-x-6">
                             <Link to="/admin/login" className="text-gray-500 hover:text-gray-400 text-sm transition-all">
                                 Admin Login
                             </Link>
+                             
                         </div>
+                        
                     </div>
                 </div>
             </div>

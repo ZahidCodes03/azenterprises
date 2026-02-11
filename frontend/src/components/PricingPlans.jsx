@@ -4,9 +4,9 @@ import { FiCheck, FiArrowRight, FiStar } from 'react-icons/fi';
 const PricingPlans = () => {
     const packages = [
         {
-            name: '3kW Package',
+            name: '3kW Package - On Grid',
             subtitle: 'Ideal for Small Homes',
-            price: '₹2,10,000',
+            price: '₹1,60,000',
             priceNote: 'Starting Price',
             subsidy: 'Up to ₹95,000 Subsidy',
             popular: false,
@@ -21,9 +21,9 @@ const PricingPlans = () => {
             ],
         },
         {
-            name: '5kW Package',
+            name: '5kW Package - On Grid',
             subtitle: 'Best for Medium Homes',
-            price: '₹2,50,000',
+            price: '₹2,58,000',
             priceNote: 'Starting Price',
             subsidy: 'Up to ₹95,000 Subsidy',
             popular: true,
@@ -39,9 +39,9 @@ const PricingPlans = () => {
             ],
         },
         {
-            name: '10kW Package',
+            name: '10kW Package - On Grid',
             subtitle: 'Commercial & Large Homes',
-            price: '₹4,50,000',
+            price: '₹5,06,000',
             priceNote: 'Starting Price',
             subsidy: 'Customized Subsidy Support',
             popular: false,

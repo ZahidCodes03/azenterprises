@@ -66,7 +66,7 @@ const HeroSection = () => {
             style={{ animationDelay: "0.3s" }}
           >
             <div>
-              <p className="text-3xl lg:text-4xl font-bold text-white">500+</p>
+              <p className="text-3xl lg:text-4xl font-bold text-white">389+</p>
               <p className="text-sm text-white/60 mt-1">Installations</p>
             </div>
 

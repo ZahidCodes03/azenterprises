@@ -153,7 +153,7 @@ const ContactSection = () => {
                             </a>
 
                             <a
-                                href="azenterprises.solar@gmail.com"
+                                href="azenterprises.solars@gmail.com"
                                 className="flex items-center p-5 bg-white rounded-xl border-2 border-gray-100 hover:border-primary-200 hover:shadow-lg transition-all"
                             >
                                 <div className="w-14 h-14 rounded-xl gradient-bg flex items-center justify-center text-white flex-shrink-0">
@@ -161,7 +161,7 @@ const ContactSection = () => {
                                 </div>
                                 <div className="ml-5">
                                     <p className="text-sm text-gray-500">Email Us</p>
-                                    <p className="font-semibold text-gray-900">azenterprises.solar@gmail.com</p>
+                                    <p className="font-semibold text-gray-900">azenterprises.solars@gmail.com</p>
                                 </div>
                             </a>
 

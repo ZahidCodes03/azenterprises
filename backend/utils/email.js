@@ -4,6 +4,7 @@ require("dotenv").config();
 /* =========================================
    ✅ Brevo Email API Sender
 ========================================= */
+console.log("🔑 BREVO_API_KEY Loaded:", process.env.BREVO_API_KEY);
 
 const sendEmailBrevo = async ({ to, subject, html }) => {
   try {

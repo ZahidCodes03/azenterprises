@@ -261,10 +261,10 @@ const Customers = () => {
                         }}
                         className="w-full border rounded-lg px-3 py-2 text-sm"
                       >
-                        <option value="Pending">Pending</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                        <option value="Completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="completed">Completed</option>
                       </select>
 
                       {/* Save Button */}
