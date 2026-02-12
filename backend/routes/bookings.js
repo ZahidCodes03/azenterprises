@@ -9,21 +9,25 @@ const { authenticateToken } = require("../middleware/auth");
 const { storage } = require("../config/cloudinary");
 
 /* =========================================
-   ✅ Safe Twilio Client Setup
+   ✅ Twilio Client Setup (WhatsApp Only)
 ========================================= */
 let client = null;
 
-if (
-  process.env.TWILIO_ACCOUNT_SID &&
-  process.env.TWILIO_AUTH_TOKEN
-) {
+if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
   client = twilio(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
   );
+  console.log("✅ Twilio Client Ready for WhatsApp");
 } else {
-  console.log("⚠️ Twilio not configured. SMS will be skipped.");
+  console.log("⚠️ Twilio not configured. WhatsApp will not work.");
 }
+
+/* =========================================
+   ✅ WhatsApp Sandbox Setup
+========================================= */
+const WHATSAPP_FROM = "whatsapp:+14155238886"; // Twilio Sandbox Number
+const WHATSAPP_TO = `whatsapp:${process.env.ADMIN_PHONE}`; // Admin WhatsApp
 
 /* =========================================
    ✅ Multer Upload Config
@@ -100,31 +104,28 @@ router.post(
 
       const booking = result.rows[0];
 
+      console.log("✅ Booking Saved Successfully");
+
       /* ✅ Send Confirmation Email */
       await sendBookingConfirmation(booking);
 
-      console.log("TWILIO_PHONE:", process.env.TWILIO_PHONE);
-console.log("ADMIN_PHONE:", process.env.ADMIN_PHONE);
-console.log("TWILIO CLIENT:", client ? "READY" : "NOT READY");
-
-
       /* =========================================
-         ✅ Send SMS Notification to Admin (Safe)
+         ✅ Send WhatsApp Notification to Admin
       ========================================= */
-      if (client && process.env.TWILIO_PHONE && process.env.ADMIN_PHONE) {
+      if (client && process.env.ADMIN_PHONE) {
         try {
           await client.messages.create({
-            body: `📌 New Booking Received!\n\n👤 Name: ${booking.name}\n📞 Phone: ${booking.phone}\n⚡ Requirement: ${booking.requirement}\n📅 Date: ${booking.preferred_date}\n\nStatus: ${booking.status}`,
-            from: process.env.TWILIO_PHONE,
-            to: process.env.ADMIN_PHONE,
+            body: `📌 New Booking Received!\n\n👤 Name: ${booking.name}\n📞 Phone: ${booking.phone}\n📧 Email: ${booking.email}\n⚡ Requirement: ${booking.requirement}\n📅 Date: ${booking.preferred_date}\n\nStatus: ${booking.status}\n\n✅ Please check Admin Panel.`,
+            from: WHATSAPP_FROM,
+            to: WHATSAPP_TO,
           });
 
-          console.log("✅ SMS sent to Admin successfully");
-        } catch (smsError) {
-          console.log("⚠️ SMS failed but booking saved:", smsError.message);
+          console.log("✅ WhatsApp Alert Sent to Admin Successfully");
+        } catch (waError) {
+          console.log("❌ WhatsApp Failed:", waError.message);
         }
       } else {
-        console.log("⚠️ SMS skipped (Twilio env missing)");
+        console.log("⚠️ WhatsApp Skipped (Missing Admin Phone or Client)");
       }
 
       /* ✅ Response */
@@ -147,7 +148,6 @@ router.get("/", authenticateToken, async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM bookings ORDER BY created_at DESC"
     );
-
     res.json(result.rows);
   } catch (error) {
     console.error("❌ Get bookings error:", error);
@@ -163,32 +163,8 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
     const { id } = req.params;
     const status = req.body.status?.toLowerCase();
 
-
     console.log("✅ Status update:", id, status);
 
-    /* ✅ Auto-delete if rejected */
-    if (status === "rejected") {
-      const bookingResult = await pool.query(
-        "SELECT * FROM bookings WHERE id=$1",
-        [id]
-      );
-
-      const bookingData = bookingResult.rows[0];
-
-      if (!bookingData) {
-        return res.status(404).json({ error: "Booking not found" });
-      }
-
-      await pool.query("DELETE FROM bookings WHERE id=$1", [id]);
-
-      await sendStatusUpdate(bookingData, status);
-
-      return res.json({
-        message: "Booking rejected and deleted successfully ✅",
-      });
-    }
-
-    /* ✅ Normal Status Update */
     const result = await pool.query(
       `UPDATE bookings 
        SET status=$1, updated_at=CURRENT_TIMESTAMP
@@ -212,22 +188,11 @@ router.put("/:id/status", authenticateToken, async (req, res) => {
 });
 
 /* =========================================
-   ✅ DELETE: Delete Booking Manually
+   ✅ DELETE: Delete Booking
 ========================================= */
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-
-    console.log("🗑 Delete request received for booking:", id);
-
-    const bookingResult = await pool.query(
-      "SELECT * FROM bookings WHERE id=$1",
-      [id]
-    );
-
-    if (bookingResult.rows.length === 0) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
 
     await pool.query("DELETE FROM bookings WHERE id=$1", [id]);
 
@@ -235,43 +200,6 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   } catch (error) {
     console.error("❌ Delete booking error:", error);
     res.status(500).json({ error: "Failed to delete booking" });
-  }
-});
-
-/* =========================================
-   ✅ GET: Booking Document URL
-========================================= */
-router.get("/:id/documents/:docType", authenticateToken, async (req, res) => {
-  try {
-    const { id, docType } = req.params;
-
-    const allowedDocs = {
-      aadhar: "aadhar_file",
-      electricityBill: "electricity_bill_file",
-      bankPassbook: "bank_passbook_file",
-    };
-
-    if (!allowedDocs[docType]) {
-      return res.status(400).json({ error: "Invalid document type" });
-    }
-
-    const result = await pool.query("SELECT * FROM bookings WHERE id=$1", [id]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
-
-    const booking = result.rows[0];
-    const fileUrl = booking[allowedDocs[docType]];
-
-    if (!fileUrl) {
-      return res.status(404).json({ error: "Document not found" });
-    }
-
-    return res.json({ url: fileUrl });
-  } catch (error) {
-    console.error("❌ Document fetch error:", error);
-    res.status(500).json({ error: "Failed to fetch document" });
   }
 });
 
