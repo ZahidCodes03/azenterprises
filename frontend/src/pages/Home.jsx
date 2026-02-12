@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
+import DirectorMessage from "../components/DirectorMessage";
 import BenefitsStrip from '../components/BenefitsStrip';
 import ServicesGrid from '../components/ServicesGrid';
 import PricingPlans from '../components/PricingPlans';
@@ -8,6 +9,8 @@ import SubsidySteps from '../components/SubsidySteps';
 import Gallery from '../components/Gallery';
 import Testimonials from '../components/Testimonials';
 import ContactSection from '../components/ContactSection';
+
+
 
 const Home = () => {
     const location = useLocation();
@@ -30,6 +33,7 @@ const Home = () => {
     return (
         <main>
             <HeroSection />
+            <DirectorMessage />
             <BenefitsStrip />
             <ServicesGrid />
             <PricingPlans />
