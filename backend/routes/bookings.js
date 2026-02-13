@@ -26,15 +26,15 @@ if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
 /* =========================================
    ✅ WhatsApp Sandbox Setup
 ========================================= */
-const WHATSAPP_FROM = "whatsapp:+14155238886"; // Twilio Sandbox Number
-const WHATSAPP_TO = `whatsapp:${process.env.ADMIN_PHONE}`; // Admin WhatsApp
+const WHATSAPP_FROM = "whatsapp:+14155238886";
+const WHATSAPP_TO = `whatsapp:${process.env.ADMIN_PHONE}`;
 
 /* =========================================
-   ✅ Multer Upload Config
+   ✅ Multer Upload Config (Cloudinary)
 ========================================= */
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 /* =========================================
@@ -109,9 +109,7 @@ router.post(
       /* ✅ Send Confirmation Email */
       await sendBookingConfirmation(booking);
 
-      /* =========================================
-         ✅ Send WhatsApp Notification to Admin
-      ========================================= */
+      /* ✅ Send WhatsApp Notification to Admin */
       if (client && process.env.ADMIN_PHONE) {
         try {
           await client.messages.create({
@@ -120,12 +118,10 @@ router.post(
             to: WHATSAPP_TO,
           });
 
-          console.log("✅ WhatsApp Alert Sent to Admin Successfully");
+          console.log("✅ WhatsApp Alert Sent Successfully");
         } catch (waError) {
           console.log("❌ WhatsApp Failed:", waError.message);
         }
-      } else {
-        console.log("⚠️ WhatsApp Skipped (Missing Admin Phone or Client)");
       }
 
       /* ✅ Response */
@@ -156,14 +152,52 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 /* =========================================
+   ✅ GET: Booking Document (FIXED ROUTE)
+========================================= */
+router.get("/:id/documents/:type", authenticateToken, async (req, res) => {
+  try {
+    const { id, type } = req.params;
+
+    /* ✅ Fetch Booking */
+    const result = await pool.query(
+      "SELECT * FROM bookings WHERE id=$1",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    const booking = result.rows[0];
+
+    /* ✅ Match Document Type */
+    let fileUrl = null;
+
+    if (type === "aadhar") fileUrl = booking.aadhar_file;
+    if (type === "electricityBill")
+      fileUrl = booking.electricity_bill_file;
+    if (type === "bankPassbook")
+      fileUrl = booking.bank_passbook_file;
+
+    if (!fileUrl) {
+      return res.status(404).json({ error: "Document not uploaded" });
+    }
+
+    /* ✅ Redirect to Cloudinary */
+    return res.redirect(fileUrl);
+  } catch (error) {
+    console.error("❌ Document fetch error:", error);
+    res.status(500).json({ error: "Failed to load document" });
+  }
+});
+
+/* =========================================
    ✅ PUT: Update Booking Status
 ========================================= */
 router.put("/:id/status", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const status = req.body.status?.toLowerCase();
-
-    console.log("✅ Status update:", id, status);
 
     const result = await pool.query(
       `UPDATE bookings 
