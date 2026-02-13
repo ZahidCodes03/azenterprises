@@ -34,7 +34,7 @@ const WHATSAPP_TO = `whatsapp:${process.env.ADMIN_PHONE}`;
 ========================================= */
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 /* =========================================
@@ -152,7 +152,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 /* =========================================
-   ✅ GET: Booking Document (FIXED ROUTE)
+   ✅ GET: Booking Document URL (FINAL FIX)
 ========================================= */
 router.get("/:id/documents/:type", authenticateToken, async (req, res) => {
   try {
@@ -183,8 +183,11 @@ router.get("/:id/documents/:type", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Document not uploaded" });
     }
 
-    /* ✅ Redirect to Cloudinary */
-    return res.redirect(fileUrl);
+    /* ✅ Return URL instead of redirect */
+    return res.json({
+      success: true,
+      url: fileUrl,
+    });
   } catch (error) {
     console.error("❌ Document fetch error:", error);
     res.status(500).json({ error: "Failed to load document" });

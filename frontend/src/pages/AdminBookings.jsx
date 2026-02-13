@@ -46,17 +46,14 @@ const AdminBookings = () => {
     }
   };
 
-  // ✅ Update Booking Status Function (Lowercase Safe)
+  // ✅ Update Booking Status
   const handleStatusUpdate = async (id, newStatus) => {
     try {
       const token = localStorage.getItem("adminToken");
 
-      // Force lowercase always
-      const statusToSend = newStatus.toLowerCase();
-
       await axios.put(
         `${BACKEND_URL}/api/bookings/${id}/status`,
-        { status: statusToSend },
+        { status: newStatus.toLowerCase() },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,11 +61,33 @@ const AdminBookings = () => {
         }
       );
 
-      alert(`Status updated to ${statusToSend} ✅`);
+      alert(`Status updated to ${newStatus} ✅`);
       fetchBookings();
     } catch (error) {
       console.error("❌ Status update failed:", error.response?.data || error);
       alert("Failed to update status ❌");
+    }
+  };
+
+  // ✅ View Document Function
+  const handleViewDocument = async (bookingId, docType) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      const res = await axios.get(
+        `${BACKEND_URL}/api/bookings/${bookingId}/documents/${docType}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // ✅ Open Cloudinary URL in new tab
+      window.open(res.data.url, "_blank");
+    } catch (error) {
+      console.error("❌ Failed to load document:", error);
+      alert("Failed to load document ❌");
     }
   };
 
@@ -91,7 +110,7 @@ const AdminBookings = () => {
                 <th className="p-2 border">Phone</th>
                 <th className="p-2 border">Requirement</th>
                 <th className="p-2 border">Status</th>
-                <th className="p-2 border">Date</th>
+                <th className="p-2 border">Documents</th>
                 <th className="p-2 border">Actions</th>
               </tr>
             </thead>
@@ -118,8 +137,32 @@ const AdminBookings = () => {
                     </select>
                   </td>
 
-                  <td className="p-2 border">
-                    {new Date(b.created_at).toLocaleDateString("en-IN")}
+                  {/* ✅ Documents Buttons */}
+                  <td className="p-2 border text-center space-x-2">
+                    <button
+                      onClick={() => handleViewDocument(b.id, "aadhar")}
+                      className="bg-blue-500 text-white px-2 py-1 rounded text-sm"
+                    >
+                      Aadhar
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleViewDocument(b.id, "electricityBill")
+                      }
+                      className="bg-green-500 text-white px-2 py-1 rounded text-sm"
+                    >
+                      Bill
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleViewDocument(b.id, "bankPassbook")
+                      }
+                      className="bg-purple-500 text-white px-2 py-1 rounded text-sm"
+                    >
+                      Passbook
+                    </button>
                   </td>
 
                   {/* ✅ Delete Button */}
