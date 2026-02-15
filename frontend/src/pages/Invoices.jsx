@@ -326,10 +326,34 @@ const Invoices = () => {
         </div>
 
         {/* TOTAL */}
-        <div className="total">
-          <h2>Total ₹ {totalAmount}</h2>
-          <p>{amountInWords}</p>
-        </div>
+<div className="total">
+  <h2>
+    Total ₹{" "}
+    <span
+      className="total-editable"
+      contentEditable
+      suppressContentEditableWarning={true}
+      onBlur={(e) => setTotalAmount(e.target.innerText.trim())}
+      style={{
+        padding: "4px 10px",
+        borderBottom: "2px dashed #0077ff",
+        display: "inline-block",
+        minWidth: "120px",
+        cursor: "text",
+      }}
+    >
+      {totalAmount}
+    </span>
+  </h2>
+
+  {/* ✅ Amount in Words Auto Updates */}
+  {totalAmount && parseFloat(totalAmount) > 0 && (
+    <p className="amount-words" style={{ marginTop: "6px" }}>
+      <b>In Words:</b> {amountInWords}
+    </p>
+  )}
+</div>
+
 
         {/* ✅ BANK DETAILS */}
         <div className="bank">
