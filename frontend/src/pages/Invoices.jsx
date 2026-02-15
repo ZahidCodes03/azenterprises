@@ -44,52 +44,45 @@ const Invoices = () => {
   const [items, setItems] = useState([
     { name: "SOLAR PANEL BIFACIAL 500 WATT (DCR)", qty: "6 pcs" },
     { name: "SOLAR ON-GRID INVERTER 5 KW", qty: "1 pcs" },
-    { name: "ACDB SINGLE PHASE WITH MCB & SPD", qty: "1 pcs" },
-    { name: "DCDB 1 IN 1 OUT 600V SPD", qty: "1 pcs" },
-    { name: "NYLON TIE CLIP", qty: "1 pcs" },
-    { name: "PLUG IN MC4 CONNECTOR (LAPP)", qty: "2 pcs" },
-    { name: "LIGHTNING ARRESTOR 1 METER", qty: "1 pcs" },
-    { name: "EARTHING CHEMICAL BAG (25KG)", qty: "2 pcs" },
-    { name: "THIMBLE 16MM COPPER (RING TYPE)", qty: "6 pcs" },
-    { name: "EARTHING ROD COPPER BONDED 2 METER", qty: "3 pcs" },
-    { name: "TAPE ROLL", qty: "2 pcs" },
-    { name: "ALUMINIUM SHORT RAIL 65MM WITH ACCESSORIES", qty: "16 pcs" },
-    { name: "DC WIRE 4 SQ MM", qty: "30 MTR" },
-    { name: "EARTHING WIRE 4MM", qty: "90 meter" },
-    { name: "AC WIRE 2 CORE 6MM Aluminium", qty: "30 meter" },
-    { name: "EARTHING PIT COVER", qty: "3 pcs" },
-    { name: "UV FLEXIBLE CONDUIT (16MM)", qty: "50 m" },
-    { name: "PVC SADDLE 20MM", qty: "100 pcs" },
   ]);
 
   /* =====================================
-     ✅ Dynamic Amount in Words
+     ✅ Amount in Words (Always Numeric)
   ====================================== */
-  const amountInWords = numberToWords(totalAmount);
+  const amountInWords = numberToWords(Number(totalAmount) || 0);
 
   /* =====================================
-     ✅ Load Invoice Data
+     ✅ Load Invoice Data for Edit
   ====================================== */
   useEffect(() => {
     if (isEditMode) {
       const loadInvoice = async () => {
         setLoading(true);
+
         try {
           const res = await getInvoice(editId);
           const inv = res.data;
 
+          console.log("Loaded Invoice:", inv);
+
+          // ✅ Correct DB Mapping
           setInvoiceNo(inv.invoice_no || "");
+
           setInvoiceDate(
             inv.invoice_date
               ? new Date(inv.invoice_date).toLocaleDateString("en-GB")
               : ""
           );
-          setCustomerName(inv.customer_name || "");
-          setTotalAmount(String(parseFloat(inv.grand_total) || 0));
 
-          // Split address back into address + city
+          setCustomerName(inv.customer_name || "");
+
+          // ✅ FIXED: Correct Total Column
+          setTotalAmount(String(parseFloat(inv.total_amount) || 0));
+
+          // ✅ Address split
           const addr = inv.customer_address || "";
           const lastComma = addr.lastIndexOf(",");
+
           if (lastComma > -1) {
             setCustomerAddress(addr.substring(0, lastComma).trim());
             setCustomerCity(addr.substring(lastComma + 1).trim());
@@ -98,7 +91,7 @@ const Invoices = () => {
             setCustomerCity("");
           }
 
-          // Parse items
+          // ✅ Items Parse
           let parsedItems = [];
           try {
             parsedItems =
@@ -122,8 +115,10 @@ const Invoices = () => {
           setLoading(false);
         }
       };
+
       loadInvoice();
     } else {
+      // ✅ New Invoice Mode
       const now = new Date();
       setInvoiceDate(now.toLocaleDateString("en-GB"));
       setInvoiceNo(generateQuoteNumber());
@@ -157,32 +152,17 @@ const Invoices = () => {
   const downloadPDF = () => {
     const element = document.getElementById("invoice-print");
 
-    // Hide no-print elements
     const noprint = document.querySelectorAll(".no-print");
     noprint.forEach((el) => (el.style.display = "none"));
 
-    // Add PDF mode class
     element.classList.add("pdf-mode");
 
     html2pdf()
       .set({
         filename: `${invoiceNo || "Invoice"}.pdf`,
-        margin: [10, 10, 10, 10],
-        html2canvas: {
-          scale: 2,
-          scrollY: 0,
-          useCORS: true,
-          windowWidth: 794, // A4 width in px at 96dpi
-        },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait",
-        },
-        pagebreak: {
-          mode: ["avoid-all", "css", "legacy"],
-          avoid: [".billto", ".bank", ".signature", ".total", "tr"],
-        },
+        margin: 10,
+        html2canvas: { scale: 2, scrollY: 0 },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       })
       .from(element)
       .save()
@@ -210,8 +190,7 @@ const Invoices = () => {
       customerAddress,
       customerCity,
       items,
-      totalAmount,
-      amountInWords,
+      totalAmount: totalAmount.trim(), // ✅ clean
     };
 
     try {
@@ -229,90 +208,101 @@ const Invoices = () => {
   };
 
   /* =====================================
-     ✅ UI Render
+     ✅ Loading Screen
   ====================================== */
   if (loading) {
     return (
       <div className="invoice-container">
-        <h2 style={{ textAlign: "center", padding: "40px" }}>Loading invoice...</h2>
+        <h2 style={{ textAlign: "center", padding: "40px" }}>
+          Loading invoice...
+        </h2>
       </div>
     );
   }
 
+  /* =====================================
+     ✅ UI Render
+  ====================================== */
   return (
     <div className="invoice-container">
-      {/* ✅ Printable Area */}
       <div id="invoice-print">
         {/* HEADER */}
         <div className="header">
           <div>
             <h1>A Z ENTERPRISES</h1>
-            <p><b>Address:</b> Kupwara Jammu &amp; Kashmir</p>
-            <p><b>Email:</b> azenterprises.solars@gmail.com</p>
-            <p><b>GSTIN:</b> 01ACMFA6519J1ZF</p>
+            <p>
+              <b>Address:</b> Kupwara Jammu & Kashmir
+            </p>
+            <p>
+              <b>Email:</b> azenterprises.solars@gmail.com
+            </p>
           </div>
 
           <div className="quote-box">
-            <p><b>Quote#:</b> <span className="invoice-no-display">{invoiceNo}</span></p>
-            <p><b>Date:</b> {invoiceDate}</p>
+            <p>
+              <b>Quote#:</b>{" "}
+              <span className="invoice-no-display">{invoiceNo}</span>
+            </p>
+            <p>
+              <b>Date:</b> {invoiceDate}
+            </p>
           </div>
         </div>
 
         {/* BILL TO */}
         <div className="billto">
           <h3>Bill To:</h3>
+
           <div
             className="editable-field"
             contentEditable
             suppressContentEditableWarning={true}
-            onBlur={(e) => setCustomerName(e.target.innerText)}
-            placeholder="Customer Name"
+            onBlur={(e) => setCustomerName(e.target.innerText.trim())}
           >
             {customerName}
           </div>
+
           <div
             className="editable-field"
             contentEditable
             suppressContentEditableWarning={true}
-            onBlur={(e) => setCustomerAddress(e.target.innerText)}
-            placeholder="Customer Address"
+            onBlur={(e) => setCustomerAddress(e.target.innerText.trim())}
           >
             {customerAddress}
           </div>
+
           <div
             className="editable-field"
             contentEditable
             suppressContentEditableWarning={true}
-            onBlur={(e) => setCustomerCity(e.target.innerText)}
-            placeholder="City, State, Pin"
+            onBlur={(e) => setCustomerCity(e.target.innerText.trim())}
           >
             {customerCity}
           </div>
         </div>
 
-        {/* ITEMS TABLE */}
+        {/* ITEMS */}
         <table className="items-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>Item &amp; Description</th>
-              <th className="qty-col">Qty</th>
-              <th className="action-col no-print">×</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th className="no-print">×</th>
             </tr>
           </thead>
 
           <tbody>
             {items.map((it, index) => (
               <tr key={index}>
-                <td style={{ textAlign: "center" }}>{index + 1}</td>
+                <td>{index + 1}</td>
 
                 <td
                   contentEditable
                   suppressContentEditableWarning={true}
                   onBlur={(e) =>
-                    handleItemChange(index, "name", e.target.innerText)
+                    handleItemChange(index, "name", e.target.innerText.trim())
                   }
-                  className="desc-col"
                 >
                   {it.name}
                 </td>
@@ -321,29 +311,21 @@ const Invoices = () => {
                   contentEditable
                   suppressContentEditableWarning={true}
                   onBlur={(e) =>
-                    handleItemChange(index, "qty", e.target.innerText)
+                    handleItemChange(index, "qty", e.target.innerText.trim())
                   }
-                  className="qty-col"
                 >
                   {it.qty}
                 </td>
 
-                <td className="no-print" style={{ textAlign: "center" }}>
-                  <button
-                    className="remove-btn"
-                    onClick={() => removeItem(index)}
-                    title="Remove item"
-                  >
-                    ×
-                  </button>
+                <td className="no-print">
+                  <button onClick={() => removeItem(index)}>×</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
 
-        {/* Add Item Button */}
-        <div className="add-item-row no-print">
+        <div className="no-print">
           <button onClick={addItem}>+ Add Item</button>
         </div>
 
@@ -352,49 +334,24 @@ const Invoices = () => {
           <h2>
             Total ₹{" "}
             <span
-              className="total-editable"
               contentEditable
               suppressContentEditableWarning={true}
-              onBlur={(e) => setTotalAmount(e.target.innerText)}
+              onBlur={(e) => setTotalAmount(e.target.innerText.trim())}
             >
               {totalAmount}
             </span>
           </h2>
-          {totalAmount && parseFloat(totalAmount) > 0 && (
-            <p className="amount-words">{amountInWords}</p>
-          )}
-        </div>
 
-        {/* BANK */}
-        <div className="bank">
-          <h3>BANK DETAIL</h3>
-          <p><b>Bank Name:</b> Jammu &amp; Kashmir Bank</p>
-          <p><b>Account Number:</b> 0012010100003649</p>
-          <p><b>IFSC Code:</b> JAKA0FOREST</p>
-          <p><b>Address:</b> Kupwara Main</p>
-        </div>
-
-        {/* SIGNATURE */}
-        <div className="signature">
-          <p><b>A Z Enterprises</b></p>
-          <p>Authorized Signature</p>
+          <p>{amountInWords}</p>
         </div>
       </div>
 
-      {/* ✅ Buttons Outside Printable Area */}
+      {/* BUTTONS */}
       <div className="btn-group no-print">
         <button onClick={saveInvoice}>
           {isEditMode ? "Update Invoice" : "Save Invoice"}
         </button>
         <button onClick={downloadPDF}>Download PDF</button>
-        {isEditMode && (
-          <button
-            onClick={() => navigate("/admin/invoices")}
-            style={{ background: "#666" }}
-          >
-            Back to Invoices
-          </button>
-        )}
       </div>
     </div>
   );
