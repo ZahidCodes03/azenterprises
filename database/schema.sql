@@ -34,9 +34,6 @@ CREATE TABLE IF NOT EXISTS invoices (
     customer_gstin VARCHAR(20),
     invoice_date DATE NOT NULL,
     items_json JSONB NOT NULL,
-    subtotal DECIMAL(12, 2) NOT NULL,
-    cgst_total DECIMAL(12, 2) NOT NULL,
-    sgst_total DECIMAL(12, 2) NOT NULL,
     grand_total DECIMAL(12, 2) NOT NULL,
     amount_in_words VARCHAR(500),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

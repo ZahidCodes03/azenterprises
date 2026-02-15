@@ -214,17 +214,7 @@ const generateInvoicePDF = (invoiceData) => {
             const totalsX = 350;
             doc.fontSize(10).font('Helvetica');
 
-            doc.text('Sub Total:', totalsX, rowY);
-            doc.text(`₹${invoiceData.subtotal.toFixed(2)}`, totalsX + 120, rowY, { align: 'right' });
-
-            rowY += 18;
-            doc.text('CGST Total:', totalsX, rowY);
-            doc.text(`₹${invoiceData.cgst_total.toFixed(2)}`, totalsX + 120, rowY, { align: 'right' });
-
-            rowY += 18;
-            doc.text('SGST Total:', totalsX, rowY);
-            doc.text(`₹${invoiceData.sgst_total.toFixed(2)}`, totalsX + 120, rowY, { align: 'right' });
-
+            
             rowY += 18;
             doc.font('Helvetica-Bold').fillColor('#16a34a');
             doc.text('Grand Total:', totalsX, rowY);

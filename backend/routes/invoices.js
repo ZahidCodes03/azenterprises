@@ -3,7 +3,7 @@ const router = express.Router();
 const pool = require("../config/database");
 
 /* ==========================================
-   ✅ GET Items List
+   ✅ GET Items List (Optional)
 ========================================== */
 router.get("/items", (req, res) => {
   res.json([]);
@@ -22,7 +22,6 @@ router.post("/", async (req, res) => {
       customerCity,
       items,
       totalAmount,
-      amountInWords,
     } = req.body;
 
     if (!invoiceNo || !customerName) {
@@ -40,31 +39,23 @@ router.post("/", async (req, res) => {
     const result = await pool.query(
       `INSERT INTO invoices (
         invoice_no,
+        invoice_date,
         customer_name,
         customer_address,
-        invoice_date,
         items_json,
-        subtotal,
-        cgst_total,
-        sgst_total,
-        grand_total,
-        amount_in_words
+        total_amount
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *`,
       [
         invoiceNo,
-        customerName,
-        fullAddress,
         invoiceDate
           ? new Date(invoiceDate.split("/").reverse().join("-"))
           : new Date(),
+        customerName,
+        fullAddress,
         JSON.stringify(items),
         total,
-        0,
-        0,
-        total,
-        amountInWords || "",
       ]
     );
 
@@ -88,6 +79,7 @@ router.get("/", async (req, res) => {
     );
     res.json(result.rows);
   } catch (error) {
+    console.error("Fetch Invoice Error:", error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -97,9 +89,10 @@ router.get("/", async (req, res) => {
 ========================================== */
 router.get("/:id", async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM invoices WHERE id = $1`, [
-      req.params.id,
-    ]);
+    const result = await pool.query(
+      `SELECT * FROM invoices WHERE id = $1`,
+      [req.params.id]
+    );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Invoice not found" });
@@ -107,6 +100,7 @@ router.get("/:id", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (error) {
+    console.error("Fetch Single Invoice Error:", error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -124,7 +118,6 @@ router.put("/:id", async (req, res) => {
       customerCity,
       items,
       totalAmount,
-      amountInWords,
     } = req.body;
 
     const fullAddress = [customerAddress, customerCity]
@@ -136,30 +129,22 @@ router.put("/:id", async (req, res) => {
     const result = await pool.query(
       `UPDATE invoices SET
         invoice_no = $1,
-        customer_name = $2,
-        customer_address = $3,
-        invoice_date = $4,
+        invoice_date = $2,
+        customer_name = $3,
+        customer_address = $4,
         items_json = $5,
-        subtotal = $6,
-        cgst_total = $7,
-        sgst_total = $8,
-        grand_total = $9,
-        amount_in_words = $10
-      WHERE id = $11
+        total_amount = $6
+      WHERE id = $7
       RETURNING *`,
       [
         invoiceNo,
-        customerName,
-        fullAddress,
         invoiceDate
           ? new Date(invoiceDate.split("/").reverse().join("-"))
           : new Date(),
+        customerName,
+        fullAddress,
         JSON.stringify(items),
         total,
-        0,
-        0,
-        total,
-        amountInWords || "",
         req.params.id,
       ]
     );
