@@ -16,6 +16,7 @@ import Dashboard from "./pages/Dashboard";
 import AdminBookings from "./pages/AdminBookings";
 import Customers from "./pages/Customers";
 import Invoices from "./pages/Invoices";
+import AdminInvoices from "./pages/AdminInvoices";
 
 
 /* Public Layout Wrapper */
@@ -79,7 +80,9 @@ function App() {
           <Route path="bookings" element={<AdminBookings />} />
 
           <Route path="customers" element={<Customers />} />
-          <Route path="invoices" element={<Invoices />} />
+          <Route path="invoices" element={<AdminInvoices />} />
+          <Route path="invoices/create" element={<Invoices />} />
+          <Route path="invoices/edit/:id" element={<Invoices />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -58,25 +58,30 @@ const generateInvoicePDF = (invoiceData) => {
 
             const pageWidth = doc.page.width - 80;
 
-            // Header
-            doc.fontSize(20).font('Helvetica-Bold').fillColor('#16a34a')
-                .text('A Z ENTERPRISES', { align: 'center' });
-            doc.fontSize(10).font('Helvetica').fillColor('#333')
-                .text('Authorized Solar Distributors / Installation', { align: 'center' });
-            doc.fontSize(9)
-                .text('GSTIN: 01ACMFA6519J1ZF', { align: 'center' })
-                .text('BY-PASS ROAD HANDWARA – 193221', { align: 'center' })
-                .text('Contact: 7006031785, 6006780785', { align: 'center' });
+            // helper: draw common header (company info + invoice title)
+            const drawHeader = () => {
+                doc.fontSize(20).font('Helvetica-Bold').fillColor('#16a34a')
+                    .text('A Z ENTERPRISES', { align: 'center' });
+                doc.fontSize(10).font('Helvetica').fillColor('#333')
+                    .text('Authorized Solar Distributors / Installation', { align: 'center' });
+                doc.fontSize(9)
+                    .text('GSTIN: 01ACMFA6519J1ZF', { align: 'center' })
+                    .text('BY-PASS ROAD HANDWARA – 193221', { align: 'center' })
+                    .text('Contact: 7006031785, 6006780785', { align: 'center' });
 
-            doc.moveDown();
-            doc.strokeColor('#16a34a').lineWidth(2)
-                .moveTo(40, doc.y).lineTo(doc.page.width - 40, doc.y).stroke();
+                doc.moveDown();
+                doc.strokeColor('#16a34a').lineWidth(2)
+                    .moveTo(40, doc.y).lineTo(doc.page.width - 40, doc.y).stroke();
 
-            // Invoice Title
-            doc.moveDown();
-            doc.fontSize(16).font('Helvetica-Bold').fillColor('#16a34a')
-                .text('TAX INVOICE', { align: 'center' });
-            doc.moveDown();
+                // Invoice Title
+                doc.moveDown();
+                doc.fontSize(16).font('Helvetica-Bold').fillColor('#16a34a')
+                    .text('TAX INVOICE', { align: 'center' });
+                doc.moveDown();
+            };
+
+            // draw the header on the first page
+            drawHeader();
 
             // Invoice Details Box
             const boxTop = doc.y;
@@ -103,62 +108,106 @@ const generateInvoicePDF = (invoiceData) => {
             doc.moveDown(3);
 
             // Items Table
-            const tableTop = doc.y + 10;
             const tableHeaders = ['S.No', 'Particulars', 'HSN', 'Qty', 'Unit', 'Rate', 'GST%', 'CGST', 'SGST', 'Amount'];
             const colWidths = [30, 100, 45, 30, 30, 55, 35, 45, 45, 60];
-            let xPos = 40;
 
-            // Table Header
-            doc.fillColor('#16a34a').rect(40, tableTop, pageWidth, 20).fill();
-            doc.fillColor('white').fontSize(8).font('Helvetica-Bold');
-            tableHeaders.forEach((header, i) => {
-                doc.text(header, xPos + 3, tableTop + 5, { width: colWidths[i], align: 'center' });
-                xPos += colWidths[i];
-            });
+            // helpers for pagination
+            const bottomMargin = 40;
+            const rowHeight = 18;
+
+            const drawTableHeader = (y) => {
+                let x = 40;
+                doc.fillColor('#16a34a').rect(40, y, pageWidth, 20).fill();
+                doc.fillColor('white').fontSize(8).font('Helvetica-Bold');
+                tableHeaders.forEach((header, i) => {
+                    doc.text(header, x + 3, y + 5, { width: colWidths[i], align: 'center' });
+                    x += colWidths[i];
+                });
+            };
+
+            // start position for table
+            let tableTop = doc.y + 10;
+            // if there isn't room for at least one header + one row, start a new page
+            const headerHeight = 20;
+            if (tableTop + headerHeight + rowHeight > doc.page.height - bottomMargin) {
+                doc.addPage();
+                drawHeader();
+                tableTop = doc.y + 10; // reset top on new page below header
+            }
+
+            drawTableHeader(tableTop);
 
             // Table Rows
             let rowY = tableTop + 20;
             doc.fontSize(8).font('Helvetica').fillColor('#333');
 
+            // we'll need to draw borders per page segment
+            let currentPageStart = tableTop;
+
             invoiceData.items.forEach((item, index) => {
-                if (item.qty && item.qty > 0) {
-                    xPos = 40;
-                    const amount = item.qty * item.rate;
-                    const gstAmount = amount * (item.gst / 100);
-                    const cgst = gstAmount / 2;
-                    const sgst = gstAmount / 2;
+                if (!(item.qty && item.qty > 0)) return;
 
-                    // Alternate row colors
-                    if (index % 2 === 0) {
-                        doc.fillColor('#f0fdf4').rect(40, rowY, pageWidth, 18).fill();
-                    }
-                    doc.fillColor('#333');
+                // check if we need a new page before drawing this row
+                if (rowY + rowHeight > doc.page.height - bottomMargin) {
+                    // finish border on current page
+                    doc.strokeColor('#16a34a').lineWidth(1)
+                        .rect(40, currentPageStart, pageWidth, rowY - currentPageStart).stroke();
 
-                    const rowData = [
-                        (index + 1).toString(),
-                        item.name,
-                        item.hsn || '-',
-                        item.qty.toString(),
-                        item.unit || 'Nos',
-                        `₹${item.rate.toFixed(2)}`,
-                        `${item.gst}%`,
-                        `₹${cgst.toFixed(2)}`,
-                        `₹${sgst.toFixed(2)}`,
-                        `₹${(amount + gstAmount).toFixed(2)}`
-                    ];
+                    // add a fresh page and repeat header
+                    doc.addPage();
+                    drawHeader();
 
-                    rowData.forEach((data, i) => {
-                        doc.text(data, xPos + 3, rowY + 5, { width: colWidths[i], align: i === 1 ? 'left' : 'center' });
-                        xPos += colWidths[i];
-                    });
-
-                    rowY += 18;
+                    // position new table top below header
+                    tableTop = doc.y + 10;
+                    drawTableHeader(tableTop);
+                    currentPageStart = tableTop;
+                    rowY = tableTop + 20;
                 }
+
+                let xPos = 40;
+                const amount = item.qty * item.rate;
+                const gstAmount = amount * (item.gst / 100);
+                const cgst = gstAmount / 2;
+                const sgst = gstAmount / 2;
+
+                // Alternate row colors
+                if (index % 2 === 0) {
+                    doc.fillColor('#f0fdf4').rect(40, rowY, pageWidth, rowHeight).fill();
+                }
+                doc.fillColor('#333');
+
+                const rowData = [
+                    (index + 1).toString(),
+                    item.name,
+                    item.hsn || '-',
+                    item.qty.toString(),
+                    item.unit || 'Nos',
+                    `₹${item.rate.toFixed(2)}`,
+                    `${item.gst}%`,
+                    `₹${cgst.toFixed(2)}`,
+                    `₹${sgst.toFixed(2)}`,
+                    `₹${(amount + gstAmount).toFixed(2)}`
+                ];
+
+                rowData.forEach((data, i) => {
+                    doc.text(data, xPos + 3, rowY + 5, { width: colWidths[i], align: i === 1 ? 'left' : 'center' });
+                    xPos += colWidths[i];
+                });
+
+                rowY += rowHeight;
             });
 
-            // Table border
+            // final border for whatever is left on the last page
             doc.strokeColor('#16a34a').lineWidth(1)
-                .rect(40, tableTop, pageWidth, rowY - tableTop).stroke();
+                .rect(40, currentPageStart, pageWidth, rowY - currentPageStart).stroke();
+
+            // Before drawing totals, make sure there is enough room on current page
+            const remainingHeight = 4 * 18 + 40; // approx space needed for totals + amount in words etc
+            if (rowY + remainingHeight > doc.page.height - bottomMargin) {
+                doc.addPage();
+                drawHeader();
+                rowY = doc.y + 10; // start under fresh header
+            }
 
             // Totals Section
             rowY += 10;

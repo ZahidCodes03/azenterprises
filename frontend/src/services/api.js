@@ -21,11 +21,20 @@ const api = axios.create({
 });
 
 /* ============================================
-   ✅ Attach Admin Token Automatically
+   ✅ Attach Token Automatically
+   Supports BOTH:
+   - adminToken
+   - token
 ============================================ */
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("adminToken");
+  // ✅ First check adminToken
+  const adminToken = localStorage.getItem("adminToken");
+
+  // ✅ If not found, check normal token
+  const userToken = localStorage.getItem("token");
+
+  const token = adminToken || userToken;
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -42,8 +51,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem("adminToken");
+      console.log("Unauthorized! Logging out...");
 
+      // Remove both tokens
+      localStorage.removeItem("adminToken");
+      localStorage.removeItem("token");
+
+      // Redirect only if admin panel
       if (
         window.location.pathname.startsWith("/admin") &&
         window.location.pathname !== "/admin/login"
@@ -72,18 +86,16 @@ export const createBooking = (formData) =>
 export const getBookings = (params) =>
   api.get("/bookings", { params });
 
-// ✅ Update Booking Status (Pending → Approved etc.)
+// Update Booking Status
 export const updateBookingStatus = (id, status) =>
   api.put(`/bookings/${id}/status`, { status });
 
-// ✅ Delete Booking
+// Delete Booking
 export const deleteBooking = (id) =>
   api.delete(`/bookings/${id}`);
 
-
 /* ============================================
    ✅ Booking Document API
-   Backend returns { url: "cloudinary-link" }
 ============================================ */
 
 const documentTypeMap = {
@@ -124,11 +136,14 @@ export const submitContact = (data) =>
   api.post("/contact", data);
 
 /* ============================================
-   ✅ Invoice APIs
+   ✅ Invoice APIs (Fixed + Working)
 ============================================ */
 
 export const getInvoiceItems = () =>
   api.get("/invoices/items");
+
+export const getNextInvoiceNumber = () =>
+  api.get("/invoices/next/number");
 
 export const createInvoice = (data) =>
   api.post("/invoices", data);
@@ -139,6 +154,12 @@ export const getInvoices = () =>
 export const getInvoice = (id) =>
   api.get(`/invoices/${id}`);
 
+export const updateInvoice = (id, data) =>
+  api.put(`/invoices/${id}`, data);
+
+export const deleteInvoice = (id) =>
+  api.delete(`/invoices/${id}`);
+
 export const getInvoicePDF = (id) =>
   api.get(`/invoices/${id}/pdf`, {
     responseType: "blob",
@@ -148,9 +169,6 @@ export const generateInvoicePDF = (data) =>
   api.post("/invoices/generate-pdf", data, {
     responseType: "blob",
   });
-
-export const getNextInvoiceNumber = () =>
-  api.get("/invoices/next/number");
 
 /* ============================================
    ✅ Export Axios Instance
