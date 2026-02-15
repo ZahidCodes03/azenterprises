@@ -44,6 +44,23 @@ const Invoices = () => {
   const [items, setItems] = useState([
     { name: "SOLAR PANEL BIFACIAL 500 WATT (DCR)", qty: "6 pcs" },
     { name: "SOLAR ON-GRID INVERTER 5 KW", qty: "1 pcs" },
+    { name: "ACDB SINGLE PHASE WITH MCB & SPD", qty: "1 pcs" },
+    { name: "DCDB 1 IN 1 OUT 600V SPD", qty: "1 pcs" },
+    { name: "NYLON TIE CLIP", qty: "1 pcs" },
+    { name: "PLUG IN MC4 CONNECTOR (LAPP)", qty: "2 pcs" },
+    { name: "LIGHTNING ARRESTOR 1 METER", qty: "1 pcs" }, 
+    { name: "EARTHING CHEMICAL BAG (25KG)", qty: "2 pcs" },
+    { name: "THIMBLE 16MM COPPER (RING TYPE)", qty: "6 pcs" }, 
+    { name: "EARTHING ROD COPPER BONDED 2 METER", qty: "3 pcs" },
+    { name: "TAPE ROLL", qty: "2 pcs" }, 
+    { name: "ALUMINIUM SHORT RAIL 65MM WITH ACCESSORIES", qty: "16 pcs" }, 
+    { name: "DC WIRE 4 SQ MM", qty: "30 MTR" },
+    { name: "EARTHING WIRE 4MM", qty: "90 meter" }, 
+    { name: "AC WIRE 2 CORE 6MM Aluminium", qty: "30 meter" },
+    { name: "EARTHING PIT COVER", qty: "3 pcs" },
+    { name: "UV FLEXIBLE CONDUIT (16MM)", qty: "50 m" }, 
+    { name: "PVC SADDLE 20MM", qty: "100 pcs" },
+
   ]);
 
   /* =====================================
@@ -288,7 +305,6 @@ const Invoices = () => {
               <th>#</th>
               <th>Description</th>
               <th>Qty</th>
-              <th className="no-print">×</th>
             </tr>
           </thead>
 
@@ -317,9 +333,7 @@ const Invoices = () => {
                   {it.qty}
                 </td>
 
-                <td className="no-print">
-                  <button onClick={() => removeItem(index)}>×</button>
-                </td>
+              
               </tr>
             ))}
           </tbody>
