@@ -48,28 +48,27 @@ const Invoices = () => {
     { name: "DCDB 1 IN 1 OUT 600V SPD", qty: "1 pcs" },
     { name: "NYLON TIE CLIP", qty: "1 pcs" },
     { name: "PLUG IN MC4 CONNECTOR (LAPP)", qty: "2 pcs" },
-    { name: "LIGHTNING ARRESTOR 1 METER", qty: "1 pcs" }, 
+    { name: "LIGHTNING ARRESTOR 1 METER", qty: "1 pcs" },
     { name: "EARTHING CHEMICAL BAG (25KG)", qty: "2 pcs" },
-    { name: "THIMBLE 16MM COPPER (RING TYPE)", qty: "6 pcs" }, 
+    { name: "THIMBLE 16MM COPPER (RING TYPE)", qty: "6 pcs" },
     { name: "EARTHING ROD COPPER BONDED 2 METER", qty: "3 pcs" },
-    { name: "TAPE ROLL", qty: "2 pcs" }, 
-    { name: "ALUMINIUM SHORT RAIL 65MM WITH ACCESSORIES", qty: "16 pcs" }, 
+    { name: "TAPE ROLL", qty: "2 pcs" },
+    { name: "ALUMINIUM SHORT RAIL 65MM WITH ACCESSORIES", qty: "16 pcs" },
     { name: "DC WIRE 4 SQ MM", qty: "30 MTR" },
-    { name: "EARTHING WIRE 4MM", qty: "90 meter" }, 
+    { name: "EARTHING WIRE 4MM", qty: "90 meter" },
     { name: "AC WIRE 2 CORE 6MM Aluminium", qty: "30 meter" },
     { name: "EARTHING PIT COVER", qty: "3 pcs" },
-    { name: "UV FLEXIBLE CONDUIT (16MM)", qty: "50 m" }, 
+    { name: "UV FLEXIBLE CONDUIT (16MM)", qty: "50 m" },
     { name: "PVC SADDLE 20MM", qty: "100 pcs" },
-
   ]);
 
   /* =====================================
-     ✅ Amount in Words (Always Numeric)
+     ✅ Amount in Words
   ====================================== */
   const amountInWords = numberToWords(Number(totalAmount) || 0);
 
   /* =====================================
-     ✅ Load Invoice Data for Edit
+     ✅ Load Invoice Data for Edit Mode
   ====================================== */
   useEffect(() => {
     if (isEditMode) {
@@ -80,11 +79,7 @@ const Invoices = () => {
           const res = await getInvoice(editId);
           const inv = res.data;
 
-          console.log("Loaded Invoice:", inv);
-
-          // ✅ Correct DB Mapping
           setInvoiceNo(inv.invoice_no || "");
-
           setInvoiceDate(
             inv.invoice_date
               ? new Date(inv.invoice_date).toLocaleDateString("en-GB")
@@ -93,10 +88,10 @@ const Invoices = () => {
 
           setCustomerName(inv.customer_name || "");
 
-          // ✅ FIXED: Correct Total Column
+          // ✅ FIXED TOTAL COLUMN
           setTotalAmount(String(parseFloat(inv.total_amount) || 0));
 
-          // ✅ Address split
+          // Address split
           const addr = inv.customer_address || "";
           const lastComma = addr.lastIndexOf(",");
 
@@ -108,7 +103,7 @@ const Invoices = () => {
             setCustomerCity("");
           }
 
-          // ✅ Items Parse
+          // Items parse
           let parsedItems = [];
           try {
             parsedItems =
@@ -135,7 +130,6 @@ const Invoices = () => {
 
       loadInvoice();
     } else {
-      // ✅ New Invoice Mode
       const now = new Date();
       setInvoiceDate(now.toLocaleDateString("en-GB"));
       setInvoiceNo(generateQuoteNumber());
@@ -151,16 +145,8 @@ const Invoices = () => {
     setItems(newItems);
   };
 
-  /* =====================================
-     ✅ Add / Remove Item Row
-  ====================================== */
   const addItem = () => {
     setItems([...items, { name: "", qty: "" }]);
-  };
-
-  const removeItem = (index) => {
-    if (items.length <= 1) return;
-    setItems(items.filter((_, i) => i !== index));
   };
 
   /* =====================================
@@ -172,20 +158,17 @@ const Invoices = () => {
     const noprint = document.querySelectorAll(".no-print");
     noprint.forEach((el) => (el.style.display = "none"));
 
-    element.classList.add("pdf-mode");
-
     html2pdf()
       .set({
         filename: `${invoiceNo || "Invoice"}.pdf`,
         margin: 10,
-        html2canvas: { scale: 2, scrollY: 0 },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
       })
       .from(element)
       .save()
       .then(() => {
         noprint.forEach((el) => (el.style.display = ""));
-        element.classList.remove("pdf-mode");
       });
 
     toast.success("PDF Downloaded Successfully!");
@@ -207,7 +190,7 @@ const Invoices = () => {
       customerAddress,
       customerCity,
       items,
-      totalAmount: totalAmount.trim(), // ✅ clean
+      totalAmount: totalAmount.trim(),
     };
 
     try {
@@ -218,15 +201,14 @@ const Invoices = () => {
         await createInvoice(payload);
         toast.success("Invoice Saved in Database ✅");
       }
+
+      navigate("/admin/invoices");
     } catch (error) {
       console.error("Save error:", error);
       toast.error("Failed to Save Invoice ❌");
     }
   };
 
-  /* =====================================
-     ✅ Loading Screen
-  ====================================== */
   if (loading) {
     return (
       <div className="invoice-container">
@@ -253,12 +235,14 @@ const Invoices = () => {
             <p>
               <b>Email:</b> azenterprises.solars@gmail.com
             </p>
+            <p>
+              <b>GSTIN:</b> 01ACMFA6519J1ZF
+            </p>
           </div>
 
           <div className="quote-box">
             <p>
-              <b>Quote#:</b>{" "}
-              <span className="invoice-no-display">{invoiceNo}</span>
+              <b>Quote#:</b> {invoiceNo}
             </p>
             <p>
               <b>Date:</b> {invoiceDate}
@@ -273,7 +257,7 @@ const Invoices = () => {
           <div
             className="editable-field"
             contentEditable
-            suppressContentEditableWarning={true}
+            suppressContentEditableWarning
             onBlur={(e) => setCustomerName(e.target.innerText.trim())}
           >
             {customerName}
@@ -282,7 +266,7 @@ const Invoices = () => {
           <div
             className="editable-field"
             contentEditable
-            suppressContentEditableWarning={true}
+            suppressContentEditableWarning
             onBlur={(e) => setCustomerAddress(e.target.innerText.trim())}
           >
             {customerAddress}
@@ -291,7 +275,7 @@ const Invoices = () => {
           <div
             className="editable-field"
             contentEditable
-            suppressContentEditableWarning={true}
+            suppressContentEditableWarning
             onBlur={(e) => setCustomerCity(e.target.innerText.trim())}
           >
             {customerCity}
@@ -315,7 +299,7 @@ const Invoices = () => {
 
                 <td
                   contentEditable
-                  suppressContentEditableWarning={true}
+                  suppressContentEditableWarning
                   onBlur={(e) =>
                     handleItemChange(index, "name", e.target.innerText.trim())
                   }
@@ -325,15 +309,13 @@ const Invoices = () => {
 
                 <td
                   contentEditable
-                  suppressContentEditableWarning={true}
+                  suppressContentEditableWarning
                   onBlur={(e) =>
                     handleItemChange(index, "qty", e.target.innerText.trim())
                   }
                 >
                   {it.qty}
                 </td>
-
-              
               </tr>
             ))}
           </tbody>
@@ -345,18 +327,33 @@ const Invoices = () => {
 
         {/* TOTAL */}
         <div className="total">
-          <h2>
-            Total ₹{" "}
-            <span
-              contentEditable
-              suppressContentEditableWarning={true}
-              onBlur={(e) => setTotalAmount(e.target.innerText.trim())}
-            >
-              {totalAmount}
-            </span>
-          </h2>
-
+          <h2>Total ₹ {totalAmount}</h2>
           <p>{amountInWords}</p>
+        </div>
+
+        {/* ✅ BANK DETAILS */}
+        <div className="bank">
+          <h3>BANK DETAIL</h3>
+          <p>
+            <b>Bank Name:</b> Jammu & Kashmir Bank
+          </p>
+          <p>
+            <b>Account Number:</b> 0012010100003649
+          </p>
+          <p>
+            <b>IFSC Code:</b> JAKA0FOREST
+          </p>
+          <p>
+            <b>Branch Address:</b> Kupwara Main
+          </p>
+        </div>
+
+        {/* ✅ SIGNATURE */}
+        <div className="signature">
+          <p>
+            <b>A Z Enterprises</b>
+          </p>
+          <p>Authorized Signature</p>
         </div>
       </div>
 
