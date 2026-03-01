@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiArrowRight, FiSun, FiShield } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { adminLogin, verifyOTP } from '../services/api';
+import { adminLogin } from '../services/api';
 
 const AdminLogin = () => {
     const navigate = useNavigate();
