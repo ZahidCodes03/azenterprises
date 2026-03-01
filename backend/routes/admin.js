@@ -49,71 +49,17 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate OTP
-    const otp = generateOTP();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-
-    // Save OTP in DB
-    await pool.query(
-      "UPDATE admin_users SET otp_code = $1, otp_expiry = $2 WHERE id = $3",
-      [otp, otpExpiry, admin.id]
-    );
-
-    // Send OTP Email
-    await sendOTPEmail(email, otp);
-
-    res.json({
-      message: "OTP sent to your email",
-      email,
-    });
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).json({ error: "Failed to process login" });
-  }
-});
-
-/* ================================
-   POST /api/admin/verify-otp
-   Step 2: Verify OTP → Return JWT
-================================ */
-router.post("/verify-otp", async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-
-    if (!email || !otp) {
-      return res.status(400).json({
-        error: "Email and OTP are required",
-      });
-    }
-
-    // Find admin + OTP match
-    const result = await pool.query(
-      "SELECT * FROM admin_users WHERE email = $1 AND otp_code = $2",
-      [email, otp]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: "Invalid OTP" });
-    }
-
-    const admin = result.rows[0];
-
-    // Check OTP expiry
-    if (new Date() > new Date(admin.otp_expiry)) {
-      return res.status(401).json({ error: "OTP has expired" });
-    }
-
-    // Clear OTP + update last login
-    await pool.query(
-      "UPDATE admin_users SET otp_code = NULL, otp_expiry = NULL, last_login = CURRENT_TIMESTAMP WHERE id = $1",
-      [admin.id]
-    );
-
     // Generate JWT Token
     const token = jwt.sign(
       { id: admin.id, email: admin.email },
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
+    );
+
+    // Update last login
+    await pool.query(
+      "UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = $1",
+      [admin.id]
     );
 
     res.json({
@@ -125,8 +71,8 @@ router.post("/verify-otp", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("OTP verification error:", error);
-    res.status(500).json({ error: "Failed to verify OTP" });
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Failed to process login" });
   }
 });
 
